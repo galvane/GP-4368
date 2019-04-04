@@ -8,6 +8,8 @@ class GUI:
         self.view_world_button = None
         self.pd_world_window = None
         self.qTable_window = None
+        self.pickupCells = [(1, 1,), (3, 3), (5, 5)]
+        self.dropoffCells = [(5, 1), (5, 3), (2, 5)]
 
     def new_window(self, title):
         window = Toplevel(self.main_window)
@@ -17,7 +19,14 @@ class GUI:
             self.pd_world_window = window
             for r in range(1,6):
                 for c in range(1,6):
-                    Label(self.pd_world_window, text = '(%s,%s)'%(r,c), borderwidth=12 ).grid(row=r,column=c)
+                    if (r,c) in [(1,5)]:
+                        Label(self.pd_world_window, text = '(%s,%s)'%(r,c), borderwidth=12, fg = "red").grid(row=r,column=c)
+                    elif (r,c) in self.pickupCells:
+                        Label(self.pd_world_window, text='(%s,%s)' % (r, c), borderwidth=12, fg = "green").grid(row=r, column=c)
+                    elif (r, c) in self.dropoffCells:
+                        Label(self.pd_world_window, text='(%s,%s)' % (r, c), borderwidth=12, fg = "blue").grid(row=r, column=c)
+                    else:
+                        Label(self.pd_world_window, text='(%s,%s)' % (r, c), borderwidth=12).grid(row=r, column=c)
 
         if title == "Q-Table":
             self.qTable_window = window
