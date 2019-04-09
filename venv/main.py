@@ -29,6 +29,22 @@ class PDWORLD:
     def get_possible_actions(self,state):
         agent_pos = state.agent_location
         block = state.block
+        actions = [EAST,WEST,NORTH,SOUTH]
+
+        # pick up and drop offs are only applicable in certain circumstances
+        if (state.block is OH) and (state.agent_location in world.dropoff_locations):
+            indx = world.dropoff_locations.index(state.agent_location)
+            if dropoff_limits[indx] < 5:
+                actions.append(DROPOFF)
+                return actions
+        if (state.block is NOH) and (state.agent_location in world.pickup_locations) :
+            indx = world.pickup_locations.index(state.agent_location)
+            if pickup_limits[indx] > 0:
+                actions.append(PICKUP)
+                return actions
+        return actions
+
+
         # if block == NOH and agent_pos in pickup_locations:
         #     if world.pickup_limits[pickup_locations.index(agent_pos)] > 0:
         #         return [EAST, WEST, NORTH, SOUTH, PICKUP]
@@ -89,28 +105,26 @@ def act(state, action):
     elif action == SOUTH:
         al[0] = min(grid_v_max,al[0]+1)
         reward = -1
-    elif action == PICKUP and state.block == NOH:
+    elif action == PICKUP:
         # print(al)
-        if state.agent_location in world.dropoff_locations :
-            block = 1
-            reward = 13
-            if al == [0,0]:
-                world.pickup_limits[0] -= 1
-            elif al == [2,2]:
-                world.pickup_limits[1] -= 1
-            elif al == [4,4]:
-                world.pickup_limits[2] -= 1
+        block = 1
+        reward = 13
+        if al == [0,0]:
+            world.pickup_limits[0] -= 1
+        elif al == [2,2]:
+            world.pickup_limits[1] -= 1
+        elif al == [4,4]:
+            world.pickup_limits[2] -= 1
 
-    elif action == DROPOFF and state.block == OH:
-        if state.agent_location in world.dropoff_locations:
-            block = 0
-            reward = 13
-            if al == [4,0]:
-                world.dropff_limits[0] += 1
-            elif al == [4,2]:
-                world.dropff_limits[1] += 1
-            elif al == [1,4]:
-                world.dropff_limits[2] += 1
+    elif action == DROPOFF:
+        block = 0
+        reward = 13
+        if al == [4,0]:
+            world.dropff_limits[0] += 1
+        elif al == [4,2]:
+            world.dropff_limits[1] += 1
+        elif al == [1,4]:
+            world.dropff_limits[2] += 1
 
     if world.pickup_limits == [0,0,0] and world.dropff_limits == [5,5,5]:
         done = True
@@ -153,11 +167,11 @@ import numpy as np
 import random
 random.seed(42)
 N_STATE = 50
-N_EPISODES = 100
-MAX_EPISODE_STEPS = 1000
-alpha = 0.001
-gamma = .98
-eps = 0.2
+N_EPISODES = 1000
+MAX_EPISODE_STEPS = 4000
+alpha = 0.1
+gamma = 1
+eps = 0.3
 q_table = dict()
 def q(state, action = None):
     if state not in q_table:
@@ -165,11 +179,33 @@ def q(state, action = None):
     if action is None:
         return q_table[state]
     return q_table[state][action]
+
 def choose_action(state):
+    # return random.choice(world.get_possible_actions(state))
+    ps = world.get_possible_actions(state)
+    # print(state)
+    # for p in ps:
+    #     print(actions_string[p], end=' ')
+    #
+    # print()
+    # time.sleep(1)
+    sta = q(state)
+    somev = []
+
+    for a in ps:
+        somev.append(a)
+    # if PICKUP not in ps:
+    #     np.delete(sta, PICKUP)
+    #     print("Deleting PICKUP")
+    # if DROPOFF not in ps:
+    #     np.delete(sta, DROPOFF)
+    #     print("Deleting Drop")
+    # print(somev)
+
     if random.uniform(0,1) < eps:
-        return random.choice(world.get_possible_actions(state))
+        return random.choice(somev)
     else:
-        return np.argmax(q(state))
+        return np.argmax(somev)
     # if state.agent_location in world.pickup_locations and world.pickup_limits[pickup_locations.index(state.agent_location)] > 0 :
     #     return PICKUP
     # elif state.agent_location in world.dropoff_locations and world.dropff_limits[dropoff_locations.index(state.agent_location)] < 5:
@@ -181,27 +217,36 @@ def choose_action(state):
     #         actionc =  np.argmax(q(state))
     #         # print(f"choosing action {actionc} because of argmax")
     #         return  actionc
+random.seed(1)
 for e in range(N_EPISODES):
     state = start_state
     # print(type(state))
     total_reward = 0
-    for _ in range(MAX_EPISODE_STEPS):
+    while(True):
+    # for _ in range(MAX_EPISODE_STEPS):
         action = choose_action(state)
-
+        # print("selected action: ", actions_string[action])
         nextstate, reward, done = act(state, action)
+        # print("new state:", nextstate,"reward:",reward)
         # print(nextstate)
         total_reward += reward
-        print(state,nextstate, actions_string[action],'R: ',reward)
-        time.sleep(2)
+
+        if action == PICKUP and (-1 in world.pickup_limits):
+            print(state,nextstate, actions_string[action],'R: ',reward)
+            exit()
+
+        # print(state,nextstate, actions_string[action],'R: ',reward)
+        # time.sleep(.1)
         q(state)[action] = q(state,action) + alpha * (reward + gamma * np.max(q(nextstate))-q(state,action))
         # print(f"at state {state.agent_location} {state.block} choosing action {action} {actions} with reward {reward}")
         # sleep(.1)
         state = nextstate
         if done:
+            print(f"Episode {e+1}: total reward -> {total_reward}")
             print("Done %d",e)
             break
 
-    print(f"Episode {e+1}: total reward -> {total_reward}")
+
 
 r = q(State([0,4],NOH))
 print(f"east={r[EAST]}, west={r[WEST]}, north={r[NORTH]}, south={r[SOUTH],},pickup={r[PICKUP]}, dropoff={r[DROPOFF]}")
@@ -209,11 +254,17 @@ r = q(State([0,3],NOH))
 print(f"east={r[EAST]}, west={r[WEST]}, north={r[NORTH]}, south={r[SOUTH],},pickup={r[PICKUP]}, dropoff={r[DROPOFF]}")
 r = q(State([0,2],NOH))
 print(f"east={r[EAST]}, west={r[WEST]}, north={r[NORTH]}, south={r[SOUTH],},pickup={r[PICKUP]}, dropoff={r[DROPOFF]}")
-r = q(State([1,4],NOH))
+r = q(State([1,4],OH))
 print(f"east={r[EAST]}, west={r[WEST]}, north={r[NORTH]}, south={r[SOUTH],},pickup={r[PICKUP]}, dropoff={r[DROPOFF]}")
 print(world.pickup_limits)
 print(world.dropff_limits)
 
+print(f"\t\t\t\t{actions_string}")
+for k,v in q_table.items():
+    print(k,  end=' | ')
+    for e in v:
+        print('%.3f'%round(e,2),end='\t')
+    print()
 # for key, value in q_table.items():
 #     print(key, sep=' ')
 #     for v in value:
