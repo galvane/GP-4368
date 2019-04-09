@@ -1,36 +1,169 @@
-from tkinter import *
+from pprint import pprint
+from copy import  deepcopy
+from time import sleep
+E = '[ ]'
+P = '[P]'
+D ='[D]'
+S = '[S]'
+X,Y = 0,1
+OH = 1
+NOH = 0
+EAST, WEST, NORTH, SOUTH, PICKUP, DROPOFF = 0,1,2,3,4,5
 
-class GUI:
-    def __init__(self):
-        self.main_window = Tk()
-        self.main_window.title("Reinforcement Learning")
-        self.main_window.geometry("250x500")
-        self.view_world_button = None
-        self.pd_world_window = None
+class PDWORLD:
+    def __init__(self, grid, state,  start_position, pickup_locations, pickup_limits, dropoff_locations, dropoff_limits):
+        self.grid = grid
+        self.state = state
+        self.start_postion = start_position
+        self.pickup_limits = pickup_limits
+        self.pickup_locations = pickup_locations
+        self.dropff_limits = dropoff_limits
+        self.dropoff_locations = dropoff_locations
+    def get_possible_actions(self,state):
+        agent_pos = state.agent_location
+        block = state.block
+        if block == NOH and agent_pos in pickup_locations:
+            if world.pickup_limits[pickup_locations.index(agent_pos)] > 0:
+                return [EAST, WEST, NORTH, SOUTH, PICKUP]
+            else:
+                pass
+        elif block == OH and agent_pos in dropoff_locations:
+            if world.dropff_limits[dropoff_locations.index(agent_pos)] < 5:
+                return [EAST, WEST, NORTH, SOUTH, DROPOFF]
+            else:
+                pass
+        else:
+            return [EAST,WEST,NORTH,SOUTH]
+class State:
+    def __init__(self, agent_position, block):
+        self.agent_location = agent_position
+        self.block = block
+    def __str__(self):
+        return f"Agent Location: {self.agent_location}_location Block: {self.block}"
+    def __eq__(self, other):
+        return self.agent_location == other.agent_location and self.block == other.block and isinstance(other, State)
+    def __hash__(self):
+        return hash(str(self.agent_location)+str(self.block))
+# takes state and action, return new_state, reward, done
+def act(state, action):
+    done = False
+    reward = 0
+    al = deepcopy(state.agent_location)
+    block = deepcopy(state.block)
+    grid_v_max = len(world.grid) - 1
+    grid_h_max = len(world.grid[0]) - 1
+    if action == EAST:
+        al[1] = max(0,al[1]-1)
+        reward = -1
+    elif action == WEST:
+        al[1] = min(grid_h_max,al[1]+1)
+        reward = -1
+    if action == NORTH:
+        al[0] = max(0,al[0]-1)
+        reward = -1
+    elif action == SOUTH:
+        al[0] = min(grid_v_max,al[0]+1)
+        reward = -1
+    elif action == PICKUP:
+        # print(al)
+        if al in world.dropoff_locations:
+            block = 1
+            reward = 13
+            if al == [0,0]:
+                world.pickup_limits[0] -= 1
+            elif al == [2,2]:
+                world.pickup_limits[1] -= 1
+            elif al == [4,4]:
+                world.pickup_limits[2] -= 1
+        else:
+            reward = -2
+    elif action == DROPOFF:
+        if al in world.dropoff_locations:
+            block = 0
+            reward = 13
+            if al == [4,0]:
+                world.dropff_limits[0] += 1
+            elif al == [4,2]:
+                world.dropff_limits[1] += 1
+            elif al == [1,4]:
+                world.dropff_limits[2] += 1
+        else:
+            reward = -2
+    if world.pickup_limits == [0,0,0] and world.dropff_limits == [5,5,5]:
+        done = True
+    newstate = State(al, block)
+    return newstate, reward, done
 
-    def new_window(self, title):
-        window = Toplevel(self.main_window)
-        window.title(title)
+actions = [EAST,WEST,NORTH,SOUTH,PICKUP,DROPOFF]
+grid = [[P,E,E,E,E],[E,E,E,E,D],[E,E,P,E,E],[E,E,E,E,E],[D,E,D,E,P]]
+start_location = [0,4]
+agent_location = start_location
+pickup_locations = [[0,0],[2,2],[4,4]]
+pickup_limits = [5,5,5]
+dropoff_locations = [[4,0],[4,2],[1,4]]
+dropoff_limits = [0,0,0]
+start_state = State(agent_location,NOH)
+world = PDWORLD(grid,agent_location, start_state, pickup_locations,pickup_limits, dropoff_locations, dropoff_limits)
 
-        if title == "PD-World":
-            self.pd_world_window = window
-            for r in range(1,6):
-                for c in range(1,6):
-                    Label(self.pd_world_window, text = '(%s,%s)'%(r,c), borderwidth=12 ).grid(row=r,column=c)
+pprint(grid)
+# flush = true in print
+# world.dropff_limits[2] = 6
+# for i in range(5):
+#     for j in range(5):
+#         print(f"at agent_location {i,j} possible actions {world.get_possible_actions(([i,j],OH))}")
+import numpy as np
+import random
+random.seed(42)
+N_STATE = 50
+N_EPISODES = 100
+MAX_EPISODE_STEPS = 1000
+alpha = 0.01
+gamma = .90
+eps = 0.2
+q_table = dict()
+def q(state, action = None):
+    if state not in q_table:
+        q_table[state] = np.zeros(len(actions))
+    if action is None:
+        return q_table[state]
+    return q_table[state][action]
+def choose_action(state):
+    # if random.uniform(0,1) < eps:
+    #     return random.choice(world.get_possible_actions(state))
+    # else:
+    #     return np.argmax(q(state))
+    if state.agent_location in world.pickup_locations and world.pickup_limits[pickup_locations.index(state.agent_location)] > 0 :
+        return PICKUP
+    elif state.agent_location in world.dropoff_locations and world.dropff_limits[dropoff_locations.index(state.agent_location)] < 5:
+        return DROPOFF
+    else:
+        if random.uniform(0,1) < eps:
+            return random.choice(world.get_possible_actions(state))
+        else:
+            actionc =  np.argmax(q(state))
+            # print(f"choosing action {actionc} because of argmax")
+            return  actionc
+for e in range(N_EPISODES):
+    state = start_state
+    # print(type(state))
+    total_reward = 0
+    for _ in range(MAX_EPISODE_STEPS):
+        action = choose_action(state)
 
+        nextstate, reward, done = act(state, action)
+        # print(nextstate)
+        total_reward += reward
+        q(state)[action] = q(state,action) + alpha * (reward + gamma* np.max(q(nextstate))-q(state,action))
+        # print(f"at state {state.agent_location} {state.block} choosing action {action} {actions} with reward {reward}")
+        # sleep(.1)
+        state = nextstate
+        if done:
+            print(done)
+            break
 
-    def create_pdworld(self):
-        self.view_world_button = Button(self.main_window, text='View World', pady=10, width=25, background='#4d88ff',
-                                        command=lambda: self.new_window("PD-World"))
-        square1 = Frame(self.main_window, bg="red")
-        square1.grid(row=0, column=0, rowspan=3, columnspan=2, sticky=W+E+N+S)
+    print(f"Episode {e+1}: total reward -> {total_reward}")
 
-        self.view_world_button.grid()
-        self.view_world_button.place(relx=0.5, rely=0.1, anchor=CENTER)
-
-    def generate(self):
-        self.main_window.mainloop()
-
-gui = GUI()
-gui.create_pdworld()
-gui.generate()
+r = q(State([0,3],NOH))
+print(f"east={r[EAST]}, west={r[WEST]}, north={r[NORTH]}, south={r[SOUTH],},pickup={r[PICKUP]}, dropoff={r[DROPOFF]}")
+r = q(State([0,3],OH))
+print(f"east={r[EAST]}, west={r[WEST]}, north={r[NORTH]}, south={r[SOUTH],},pickup={r[PICKUP]}, dropoff={r[DROPOFF]}")
