@@ -1,5 +1,6 @@
 import os, time
 
+
 from pprint import pprint
 from copy import  deepcopy
 from time import sleep
@@ -14,13 +15,17 @@ A_D = '[◉]'
 X,Y = 0,1
 OH = 1
 NOH = 0
+P_RANDOM = 1
+P_EXPLOIT = 2
+P_GREEDY = 3
 EAST, WEST, NORTH, SOUTH, PICKUP, DROPOFF = 0,1,2,3,4,5
 
 class PDWORLD:
 
-    def __init__(self, grid, state,  start_position, pickup_locations, pickup_limits, dropoff_locations, dropoff_limits):
+    def __init__(self, grid, state,  start_position, pickup_locations, pickup_limits, dropoff_locations, dropoff_limits,policy):
         self.grid = grid
         self.state = state
+        self.policy = policy  
         self.start_postion = start_position
         self.pickup_limits = pickup_limits
         self.pickup_locations = pickup_locations
@@ -58,6 +63,7 @@ class PDWORLD:
         # else:
 
 
+#Setting the number of iterations, penalties and reward to zero
 
 
         return [EAST,WEST,NORTH,SOUTH, PICKUP,DROPOFF]
@@ -142,7 +148,7 @@ pickup_limits = [5,5,5]
 dropoff_locations = [[4,0],[4,2],[1,4]]
 dropoff_limits = [0,0,0]
 start_state = State(agent_location,NOH)
-world = PDWORLD(grid,start_state, start_location, pickup_locations,pickup_limits, dropoff_locations, dropoff_limits)
+world = PDWORLD(grid,start_state, start_location, pickup_locations,pickup_limits, dropoff_locations, dropoff_limits, P_RANDOM)
 st = start_state
 
 #
@@ -181,42 +187,21 @@ def q(state, action = None):
     return q_table[state][action]
 
 def choose_action(state):
-    # return random.choice(world.get_possible_actions(state))
+    
     ps = world.get_possible_actions(state)
-    # print(state)
-    # for p in ps:
-    #     print(actions_string[p], end=' ')
-    #
-    # print()
-    # time.sleep(1)
-    sta = q(state)
-    somev = []
-
-    for a in ps:
-        somev.append(a)
-    # if PICKUP not in ps:
-    #     np.delete(sta, PICKUP)
-    #     print("Deleting PICKUP")
-    # if DROPOFF not in ps:
-    #     np.delete(sta, DROPOFF)
-    #     print("Deleting Drop")
-    # print(somev)
-
-    if random.uniform(0,1) < eps:
-        return random.choice(somev)
+    if world.policy == P_RANDOM:
+        return random.choice(ps)   
     else:
-        return np.argmax(somev)
-    # if state.agent_location in world.pickup_locations and world.pickup_limits[pickup_locations.index(state.agent_location)] > 0 :
-    #     return PICKUP
-    # elif state.agent_location in world.dropoff_locations and world.dropff_limits[dropoff_locations.index(state.agent_location)] < 5:
-    #     return DROPOFF
-    # else:
-    #     if random.uniform(0,1) < eps:
-    #         return random.choice(world.get_possible_actions(state))
-    #     else:
-    #         actionc =  np.argmax(q(state))
-    #         # print(f"choosing action {actionc} because of argmax")
-    #         return  actionc
+        sta = q(state)
+        somev = []
+        for a in ps:
+            somev.append(a)
+
+        if random.uniform(0,1) < eps:
+            return random.choice(somev)
+        else:
+            return np.argmax(somev)
+
 random.seed(1)
 for e in range(N_EPISODES):
     state = start_state
@@ -229,9 +214,12 @@ for e in range(N_EPISODES):
         nextstate, reward, done = act(state, action)
         # print("new state:", nextstate,"reward:",reward)
         # print(nextstate)
-        world.state = nextstate
-        print(actions_string[action])
-        print(world)
+        
+       # world.state = nextstate
+       # print(actions_string[action])
+       # print(world)
+        time.sleep(.2)
+        os.system('clear')
         total_reward += reward
 
         if action == PICKUP and (-1 in world.pickup_limits):
