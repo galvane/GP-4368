@@ -157,7 +157,7 @@ st = start_state
 
 
 
-pprint(grid)
+print(world)
 # flush = true in print
 # world.dropff_limits[2] = 6
 # for i in range(5):
@@ -229,6 +229,9 @@ for e in range(N_EPISODES):
         nextstate, reward, done = act(state, action)
         # print("new state:", nextstate,"reward:",reward)
         # print(nextstate)
+        world.state = nextstate
+        print(actions_string[action])
+        print(world)
         total_reward += reward
 
         if action == PICKUP and (-1 in world.pickup_limits):
@@ -270,3 +273,4 @@ for k,v in q_table.items():
 #     for v in value:
 #         print(v,sep=' ')
 #     print
+print(world)
