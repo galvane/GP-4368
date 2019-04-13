@@ -4,7 +4,8 @@ from world.cell import Cell, CellType
 
 
 class PDWorld:
-    startCell = Cell(CellType.REGULAR, 1,5)
+    startCell = (1,5)
+    #startCell = Cell(CellType.REGULAR, 1,5)
     cells = []
     def __init__(self):
         self.cells = []
@@ -36,5 +37,4 @@ class PDWorld:
         for c in self.cells:
             if c.position[0] == x and c.position[1] == y:
                 return c
-            else:
-                print("Could not find a cell with coordinates: " + "(" + x + "," + y + ")")
+        print("Could not find a cell with coordinates: " + "(" , x , "," , y , ")")

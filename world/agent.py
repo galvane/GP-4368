@@ -74,7 +74,7 @@ class Agent:
 
         print("applied action: " ,end ="")
         print(action_type, end ="")
-        print(" ==> agent moved from " + "(" +','.join(map(str, oldPosition)) +")" + " to " + "(" +','.join(map(str, self.agentPosition)) + ")")
+        print(" ==> agent moved from " + "(" ,oldPosition, ")" + " to " + "(" ,self.agentPosition,")")
 
         return canMove
 
