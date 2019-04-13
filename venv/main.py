@@ -1,6 +1,6 @@
 from tkinter import *
 
-from world.agent import Agent, OperatorType
+from world.agent import Agent, ActionType
 from world.cell import CellType
 from world.pdworld import PDWorld
 
@@ -49,21 +49,21 @@ class GUI:
     def create_labels(self):
         for i in self.pdWorld.cells:
             if i.type == CellType.PICKUP:
-                label = Label(self.pd_world_window, text='(%s,%s)' % i.position, bd=1, fg="green", relief=SOLID, background="white", font=("Helvetica", 12))
+                label = Label(self.pd_world_window, text='(%s,%s)' % i.position, bd=1, fg="white", relief=GROOVE, background="blue", font=("Helvetica", 12))
                 label.grid(row=i.position[0], column=i.position[1], sticky='NSEW')
                 self.labels.append(label)
             elif i.type == CellType.DROPOFF:
-                label = Label(self.pd_world_window, text='(%s,%s)' % i.position, bd=1, fg="blue", relief=SOLID, background="white", font=("Helvetica", 12))
+                label = Label(self.pd_world_window, text='(%s,%s)' % i.position, bd=1, fg="white", relief=GROOVE, background="green", font=("Helvetica", 12))
                 label.grid(row=i.position[0], column=i.position[1], sticky='NSEW')
                 self.labels.append(label)
             else:
-                label = Label(self.pd_world_window, text='(%s,%s)' % i.position, bd=1, relief=SOLID, background="white", font=("Helvetica", 12))
+                label = Label(self.pd_world_window, text='(%s,%s)' % i.position, bd=1, fg = "white", highlightthickness = 50, relief=GROOVE, background="black", font=("Helvetica", 12))
                 label.grid(row=i.position[0],column=i.position[1], sticky='NSEW')
                 self.labels.append(label)
 
     def addAgentToPDWorld(self):
         for l in self.labels:
-            if l.cget("text") == "("+','.join(map(str, agent.position))+")":
+            if l.cget("text") == "("+','.join(map(str, agent.agentPosition.position))+ ")":
                 l.config(image=self.agent.img)
 
     def create_pdworld(self):
@@ -87,7 +87,7 @@ class GUI:
 
 world = PDWorld()
 agent = Agent(world)
-agent.move(OperatorType.SOUTH)
+agent.move(ActionType.SOUTH)
 gui = GUI(world, agent)
 gui.create_pdworld()
 gui.create_qTable()
