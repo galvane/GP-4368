@@ -32,8 +32,8 @@ class Agent:
     operators = []
 
     def __init__(self, world):
-        self.img = PhotoImage(file="frog.png")
-        self.img = self.img.subsample(15)
+        self.img = PhotoImage(file="robot.png")
+        self.img = self.img.subsample(13)
         self.world = world
         self.agentPosition = world.startCell
 
@@ -83,21 +83,13 @@ class Agent:
         newx = x
         newy = y
         if self.validateNewX(x) and self.validateNewY(y):
-            newCell = self.world.getCell(newx, newy)
-            self.agentPosition = newCell
-            return self.agentPosition
+            return self.world.getCell(newx, newy)
         elif self.validateNewX(x) and not self.validateNewY(y):
-            newCell = self.world.getCell(newx, y)
-            self.agentPosition = newCell
-            return self.agentPosition
+            return self.world.getCell(newx, y)
         elif not self.validateNewX(x) and self.validateNewY(y):
-            newCell = self.world.getCell(x, newy)
-            self.agentPosition = newCell
-            return self.agentPosition
+            return self.world.getCell(x, newy)
         else:
-            newCell = self.world.getCell(x, y)
-            self.agentPosition = newCell
-            return self.agentPosition
+            return self.world.getCell(x, y)
 
     def validateNewX(self, x):
         if x > 5 or x < 0:
