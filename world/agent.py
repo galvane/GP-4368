@@ -47,8 +47,8 @@ class Agent:
     def move(self, action_type):
 
         canMove = True
-        x = self.agentPosition[0]
-        y = self.agentPosition[1]
+        x = self.agentPosition.position[0]
+        y = self.agentPosition.position[1]
 
         oldPosition = self.agentPosition
         if action_type == ActionType.NORTH:
