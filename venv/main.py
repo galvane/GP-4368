@@ -1,15 +1,20 @@
 from tkinter import *
 
+from world.cell import CellType
+from world.pdworld import PDWorld
+
+
 class GUI:
-    def __init__(self):
-        self.main_window = Tk()
-        self.main_window.title("Reinforcement Learning")
-        self.main_window.geometry("250x500")
-        self.view_world_button = None
-        self.pd_world_window = None
-        self.qTable_window = None
-        self.pickupCells = [(1, 1,), (3, 3), (5, 5)]
-        self.dropoffCells = [(5, 1), (5, 3), (2, 5)]
+    main_window = Tk()
+    main_window.title("Reinforcement Learning")
+    main_window.geometry("250x500")
+    view_world_button = None
+    pd_world_window = None
+    qTable_window = None
+    pdWorld = None
+
+    def __init__(self, world):
+        self.pdWorld = world
 
     def new_window(self, title):
         window = Toplevel(self.main_window)
@@ -17,22 +22,24 @@ class GUI:
 
         if title == "PD-World":
             self.pd_world_window = window
-            for r in range(1,6):
-                for c in range(1,6):
-                    if (r,c) in [(1,5)]:
-                        Label(self.pd_world_window, text = '(%s,%s)'%(r,c), borderwidth=12, fg = "red").grid(row=r,column=c)
-                    elif (r,c) in self.pickupCells:
-                        Label(self.pd_world_window, text='(%s,%s)' % (r, c), borderwidth=12, fg = "green").grid(row=r, column=c)
-                    elif (r, c) in self.dropoffCells:
-                        Label(self.pd_world_window, text='(%s,%s)' % (r, c), borderwidth=12, fg = "blue").grid(row=r, column=c)
-                    else:
-                        Label(self.pd_world_window, text='(%s,%s)' % (r, c), borderwidth=12).grid(row=r, column=c)
-
+            self.create_labels()
         if title == "Q-Table":
             self.qTable_window = window
             for r in range(1,6) :
                 for c in range(1,6):
                     Label(self.qTable_window, text = '0', borderwidth = 12).grid(row=r,column=c)
+
+    def create_labels(self):
+        for i in self.pdWorld.cells:
+            if i.type == CellType.PICKUP:
+                Label(self.pd_world_window, text='(%s,%s)' % i.position, borderwidth=12, fg="green").grid(
+                    row=i.position[0], column=i.position[1])
+            elif i.type == CellType.DROPOFF:
+                Label(self.pd_world_window, text='(%s,%s)' % i.position, borderwidth=12, fg="blue").grid(
+                    row=i.position[0], column=i.position[1])
+            else:
+                Label(self.pd_world_window, text='(%s,%s)' % i.position, borderwidth=12).grid(row=i.position[0],
+                                                                                              column=i.position[1])
 
     def create_pdworld(self):
         self.view_world_button = Button(self.main_window, text='View World', pady=10, width=25, background='#4d88ff',
@@ -53,7 +60,8 @@ class GUI:
     def generate(self):
         self.main_window.mainloop()
 
-gui = GUI()
+world = PDWorld()
+gui = GUI(world)
 gui.create_pdworld()
 gui.create_qTable()
 gui.generate()
