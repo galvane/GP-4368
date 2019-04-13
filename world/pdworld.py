@@ -4,6 +4,8 @@ from world.cell import Cell, CellType
 
 
 class PDWorld:
+    startCell = Cell(CellType.REGULAR, 1,5)
+    cells = []
     def __init__(self):
         self.cells = []
         for x in range (1,6):
@@ -19,5 +21,20 @@ class PDWorld:
                 else:
                     self.cells.append(Cell(CellType.REGULAR, (x,y)))
 
-        self.inTerminalState = False
-        self.startCell = (1, 5)
+    def isInTerminalState(self):
+        pickupDone = False
+        dropoffDone = False
+        for c in self.cells:
+            if c.type == CellType.PICKUP and c.blocks == 0:
+                pickupDone = True
+        for c in self.cells:
+            if c.type == CellType.DROPOFF and c.blocks == 5:
+                dropoffDone = True
+        return pickupDone and dropoffDone
+
+    def getCell(self, x, y):
+        for c in self.cells:
+            if c.position[0] == x and c.position[1] == y:
+                return c
+            else:
+                print("Could not find a cell with coordinates: " + "(" + x + "," + y + ")")
