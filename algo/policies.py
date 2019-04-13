@@ -48,7 +48,17 @@ class Policy:
     def pGreedy(self, operator):
         if (self.canDropoff and self.canPickup):
             return operator
-        #else:
+        else:
+            highestQValue = 0
+            op = None
+            for o in self.applicableOperators:
+                if o.qValue > highestQValue:
+                    highestQValue = o.qValue
+                    op = o
+                elif o.qValue == highestQValue:
+                    highestQValue = self.break_tie(o.qValue, highestQValue)
+                    op = o
+            return op
 
     def break_tie(self, o1, o2):
         randomOp = random.randint(0,2)
