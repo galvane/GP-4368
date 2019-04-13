@@ -25,13 +25,13 @@ class GUI:
         window.title(title)
         if title == "PD-World":
             self.pd_world_window = window
-            self.pd_world_window.grid_columnconfigure(0, weight=1)
+            self.pd_world_window.grid_columnconfigure(0, weight=0)
             self.pd_world_window.grid_columnconfigure(1, weight=1)
             self.pd_world_window.grid_columnconfigure(2, weight=1)
             self.pd_world_window.grid_columnconfigure(3, weight=1)
             self.pd_world_window.grid_columnconfigure(4, weight=1)
             self.pd_world_window.grid_columnconfigure(5, weight=1)
-            self.pd_world_window.grid_rowconfigure(0, weight=1)
+            self.pd_world_window.grid_rowconfigure(0, weight=0)
             self.pd_world_window.grid_rowconfigure(1, weight=1)
             self.pd_world_window.grid_rowconfigure(2, weight=1)
             self.pd_world_window.grid_rowconfigure(3, weight=1)
@@ -47,14 +47,11 @@ class GUI:
                     Label(self.qTable_window, text = '0', borderwidth = 12).grid(row=r,column=c)
 
     def create_labels(self):
-        num=0
         for i in self.pdWorld.cells:
             if i.type == CellType.PICKUP:
                 label = Label(self.pd_world_window, text='(%s,%s)' % i.position, bd=1, fg="green", relief=SOLID, background="white", font=("Helvetica", 12))
                 label.grid(row=i.position[0], column=i.position[1], sticky='NSEW')
                 self.labels.append(label)
-                num = num + 1
-                ## CHANGES A LABEL ATTRIBUTE:
             elif i.type == CellType.DROPOFF:
                 label = Label(self.pd_world_window, text='(%s,%s)' % i.position, bd=1, fg="blue", relief=SOLID, background="white", font=("Helvetica", 12))
                 label.grid(row=i.position[0], column=i.position[1], sticky='NSEW')
