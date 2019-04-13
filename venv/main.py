@@ -1,6 +1,6 @@
 from tkinter import *
 
-from world.agent import Agent
+from world.agent import Agent, OperatorType
 from world.cell import CellType
 from world.pdworld import PDWorld
 
@@ -63,7 +63,7 @@ class GUI:
 
     def addAgentToPDWorld(self):
         for l in self.labels:
-            if l.cget("text") == "("+','.join(map(str, world.startCell))+")":
+            if l.cget("text") == "("+','.join(map(str, agent.position))+")":
                 l.config(image=self.agent.img)
 
     def create_pdworld(self):
@@ -87,7 +87,9 @@ class GUI:
 
 world = PDWorld()
 agent = Agent(world)
+agent.move(OperatorType.SOUTH)
 gui = GUI(world, agent)
 gui.create_pdworld()
 gui.create_qTable()
 gui.generate()
+
