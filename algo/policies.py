@@ -27,7 +27,33 @@ class Policy:
             if self.applicableOperators is not None:
                 return self.applicableOperators[randomOperator]
 
-    # def pExploit(self, operator):
-    #
-    # def pGreedy(self, operator):
+    def pExploit(self, operator):
+        if (self.canDropoff and self.canPickup):
+            return operator
+        else:
+            highestQValue = 0
+            op = None
+            randomOperator = random.randint(0, self.applicableOperators.__len__())
+            for o in self.applicableOperators:
+                if o.qValue > highestQValue:
+                    highestQValue = o.qValue
+                    probability = [highestQValue]*80 * self.applicableOperators[randomOperator] * 20
+                    random.choice(probability)
+                    op = o
+                elif o.qValue == highestQValue:
+                    highestQValue = self.break_tie(o.qValue, highestQValue)
+                    op = o
+            return op
+
+    def pGreedy(self, operator):
+        if (self.canDropoff and self.canPickup):
+            return operator
+        #else:
+
+    def break_tie(self, o1, o2):
+        randomOp = random.randint(0,2)
+        if randomOp == 1:
+            return o1
+        return o2
+
 
