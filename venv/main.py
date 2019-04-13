@@ -1,5 +1,6 @@
 from tkinter import *
 
+from world.agent import Agent
 from world.cell import CellType
 from world.pdworld import PDWorld
 
@@ -12,17 +13,33 @@ class GUI:
     pd_world_window = None
     qTable_window = None
     pdWorld = None
+    labels = []
+    agent = None
 
-    def __init__(self, world):
+    def __init__(self, world, agent):
         self.pdWorld = world
+        self.agent = agent
 
     def new_window(self, title):
         window = Toplevel(self.main_window)
         window.title(title)
-
         if title == "PD-World":
             self.pd_world_window = window
+            self.pd_world_window.grid_columnconfigure(0, weight=1)
+            self.pd_world_window.grid_columnconfigure(1, weight=1)
+            self.pd_world_window.grid_columnconfigure(2, weight=1)
+            self.pd_world_window.grid_columnconfigure(3, weight=1)
+            self.pd_world_window.grid_columnconfigure(4, weight=1)
+            self.pd_world_window.grid_columnconfigure(5, weight=1)
+            self.pd_world_window.grid_rowconfigure(0, weight=1)
+            self.pd_world_window.grid_rowconfigure(1, weight=1)
+            self.pd_world_window.grid_rowconfigure(2, weight=1)
+            self.pd_world_window.grid_rowconfigure(3, weight=1)
+            self.pd_world_window.grid_rowconfigure(4, weight=1)
+            self.pd_world_window.grid_rowconfigure(5, weight=1)
+            self.pd_world_window.geometry("600x600")
             self.create_labels()
+            self.addAgentToPDWorld()
         if title == "Q-Table":
             self.qTable_window = window
             for r in range(1,6) :
@@ -30,22 +47,33 @@ class GUI:
                     Label(self.qTable_window, text = '0', borderwidth = 12).grid(row=r,column=c)
 
     def create_labels(self):
+        num=0
         for i in self.pdWorld.cells:
             if i.type == CellType.PICKUP:
-                Label(self.pd_world_window, text='(%s,%s)' % i.position, borderwidth=12, fg="green").grid(
-                    row=i.position[0], column=i.position[1])
+                label = Label(self.pd_world_window, text='(%s,%s)' % i.position, bd=1, fg="green", relief=SOLID, background="white", font=("Helvetica", 12))
+                label.grid(row=i.position[0], column=i.position[1], sticky='NSEW')
+                self.labels.append(label)
+                num = num + 1
+                ## CHANGES A LABEL ATTRIBUTE:
             elif i.type == CellType.DROPOFF:
-                Label(self.pd_world_window, text='(%s,%s)' % i.position, borderwidth=12, fg="blue").grid(
-                    row=i.position[0], column=i.position[1])
+                label = Label(self.pd_world_window, text='(%s,%s)' % i.position, bd=1, fg="blue", relief=SOLID, background="white", font=("Helvetica", 12))
+                label.grid(row=i.position[0], column=i.position[1], sticky='NSEW')
+                self.labels.append(label)
             else:
-                Label(self.pd_world_window, text='(%s,%s)' % i.position, borderwidth=12).grid(row=i.position[0],
-                                                                                              column=i.position[1])
+                label = Label(self.pd_world_window, text='(%s,%s)' % i.position, bd=1, relief=SOLID, background="white", font=("Helvetica", 12))
+                label.grid(row=i.position[0],column=i.position[1], sticky='NSEW')
+                self.labels.append(label)
+
+    def addAgentToPDWorld(self):
+        for l in self.labels:
+            if l.cget("text") == "("+','.join(map(str, world.startCell))+")":
+                l.config(image=self.agent.img)
 
     def create_pdworld(self):
         self.view_world_button = Button(self.main_window, text='View World', pady=10, width=25, background='#4d88ff',
                                         command=lambda: self.new_window("PD-World"))
         square1 = Frame(self.main_window, bg="red")
-        square1.grid(row=0, column=0, rowspan=3, columnspan=2, sticky=W+E+N+S)
+        square1.grid(row=0, column=0, columnspan=4, sticky=N+S+W+E)
 
         self.view_world_button.grid()
         self.view_world_button.place(relx=0.5, rely=0.1, anchor=CENTER)
@@ -61,7 +89,8 @@ class GUI:
         self.main_window.mainloop()
 
 world = PDWorld()
-gui = GUI(world)
+agent = Agent(world)
+gui = GUI(world, agent)
 gui.create_pdworld()
 gui.create_qTable()
 gui.generate()
