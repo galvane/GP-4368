@@ -1,5 +1,6 @@
 from tkinter import *
 
+from algo.experiments import Experiment
 from world.agent import Agent, ActionType
 from world.cell import CellType
 from world.pdworld import PDWorld
@@ -39,7 +40,7 @@ class GUI:
             self.pd_world_window.grid_rowconfigure(5, weight=1)
             self.pd_world_window.geometry("600x600")
             self.create_labels()
-            self.addAgentToPDWorld()
+            self.updateAgentPosition()
         if title == "Q-Table":
             self.qTable_window = window
             for r in range(1,6) :
@@ -61,19 +62,24 @@ class GUI:
                 label.grid(row=i.position[0],column=i.position[1], sticky='NSEW')
                 self.labels.append(label)
 
-    def addAgentToPDWorld(self):
+    def updateAgentPosition(self):
         for l in self.labels:
             if l.cget("text") == "("+','.join(map(str, agent.agentPosition.position))+ ")":
                 l.config(image=self.agent.img)
+            else:
+                l.config(image='')
 
     def create_pdworld(self):
         self.view_world_button = Button(self.main_window, text='View World', pady=10, width=25, background='#4d88ff',
                                         command=lambda: self.new_window("PD-World"))
-        square1 = Frame(self.main_window, bg="red")
-        square1.grid(row=0, column=0, columnspan=4, sticky=N+S+W+E)
 
         self.view_world_button.grid()
         self.view_world_button.place(relx=0.5, rely=0.1, anchor=CENTER)
+
+        self.experiment2_button = Button(self.main_window, text='Experiment 2', pady=10, width=25, background ='#ADFF2F',
+                                         command=lambda: self.experiment2())
+        self.experiment2_button.grid()
+        self.experiment2_button.place(relx=0.5, rely=0.4, anchor=CENTER)
 
     def create_qTable(self):
         self.view_qTable_button = Button(self.main_window, text='View Q-Table', pady=10, width=25, background='#4d88ff',
@@ -82,14 +88,17 @@ class GUI:
         self.view_qTable_button.grid()
         self.view_qTable_button.place(relx=0.5, rely=.25, anchor=S)
 
+    def experiment2(self):
+        agent.setGUI(gui)
+        (Experiment(agent)).experiment2()
+        self.updateAgentPosition()
+
     def generate(self):
         self.main_window.mainloop()
 
 world = PDWorld()
 agent = Agent(world)
-agent.move(ActionType.SOUTH)
 gui = GUI(world, agent)
 gui.create_pdworld()
 gui.create_qTable()
 gui.generate()
-

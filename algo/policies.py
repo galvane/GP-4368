@@ -40,7 +40,7 @@ class Policy:
         else:
             randomOperator = random.randint(0,self.applicableOperators.__len__()-1)
             if self.applicableOperators is not None:
-                return self.applicableOperators[randomOperator]
+                return Action(self.applicableOperators[randomOperator].type)
 
     # returns action in accordance with the exploit action policy
     def pExploit(self, operator):

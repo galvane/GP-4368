@@ -1,4 +1,6 @@
 # reinforcement learning
+from numpy.core._dtype import __repr__
+
 from algo.policies import PolicyType
 
 class RL:
@@ -25,9 +27,17 @@ class RL:
         self.position = self.agent.agentPosition #initial state
         action = None
         #while(not self.agent.world.isInTerminalState):
-        if self.policy.type == PolicyType.PRANDOM:
-            action = self.policy.pRandom()
-            self.agent.move(action.actionType)
+        for x in range (0,2):
+            if self.policy.type == PolicyType.PRANDOM:
+                print("Agent's position before move: ", end="")
+                print(self.agent.agentPosition.__dict__)
+                self.action = self.policy.pRandom()
+                self.agent.move(self.action)
+                print ("Action Chosen at Random: ",end="")
+                print(self.action.type.__dict__)
+                print("Agent's position: ", end="")
+                print(self.agent.agentPosition.__dict__)
+
 
     #def sarsa(self):
 

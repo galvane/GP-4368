@@ -1,8 +1,7 @@
 from tkinter import *
 from enum import Enum
-import collections
 
-from world.cell import Cell, CellType
+from world.cell import CellType
 
 
 class ActionType(Enum):
@@ -14,20 +13,21 @@ class ActionType(Enum):
     DROPOFF = 6
 
 class Action:
-    actionType = None
+    type = None
     qValue = 0
     def __init__(self,  type):
-        self.actionType = type
+        self.type = type
 
     def setApplicability(self, isApplicable):
         self.isApplicable = isApplicable
 
     def getApplicability(self, agent):
-        return agent.validateActionType(self.actionType)
+        return agent.validateActionType(self.type)
 
 class Agent:
     world = None
     agentPosition = None
+    interface = None
     img = None
     operators = []
 
@@ -46,6 +46,8 @@ class Agent:
         self.operators.extend(op)
 
 
+    def setGUI(self, gui):
+        self.interface = gui
 
     def validateActionType(self, action_type):
         x = self.agentPosition.position[0]
@@ -83,39 +85,43 @@ class Agent:
         return True
 
     """PD-WORLD FOR SOME REASON HAS X AND Y COORDINATES FLIPPED"""
-    def move(self, action_type):
+    def move(self, action):
+        actionSuccessful = True
+
         x = self.agentPosition.position[0]
         y = self.agentPosition.position[1]
 
         oldState = self.agentPosition
-        if action_type == ActionType.NORTH:
+        if action.type == ActionType.NORTH:
             self.newx = x - 1
-            if self.validateActionType(action_type):
+            if self.validateMove(self.newx, y):
                 self.agentPosition = self.world.getCell(self.newx, y)
 
-        elif action_type == ActionType.EAST:
+        elif action.type == ActionType.EAST:
             self.newy = y + 1
             if self.validateMove(x, self.newy):
                 self.agentPosition = self.world.getCell(x, self.newy)
 
-        elif action_type == ActionType.SOUTH:
+        elif action.type == ActionType.SOUTH:
             self.newx = x + 1
             if self.validateMove(self.newx, y):
                 self.agentPosition = self.world.getCell(self.newx, y)
 
-        elif action_type == ActionType.WEST:
+        elif action.type == ActionType.WEST:
             self.newy = y - 1
             if self.validateMove(x, self.newy):
                 self.agentPosition = self.world.getCell(x, self.newy)
 
-        elif action_type == ActionType.PICKUP:
+        elif action.type == ActionType.PICKUP:
             self.agentPosition.blocks = self.agentPosition.blocks - 1
 
-        elif action_type == ActionType.DROPOFF:
+        elif action.type == ActionType.DROPOFF:
             self.agentPosition.block = self.agentPosition.blocks + 1
 
         else:
             print("[WARNING]: " + "Invalid operator!")
+            actionSuccessful = False
+        return actionSuccessful
 
         # if successful:
         #     print("applied action: ", end ="")
@@ -124,6 +130,7 @@ class Agent:
         # else:
         #     print("agent attempted to move ", end="")
         #     print(action_type, end="")
+        self.interface.updateAgentPosition()
 
 
     def validateMove(self, x, y):

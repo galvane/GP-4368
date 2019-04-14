@@ -4,8 +4,8 @@ from world.cell import Cell, CellType
 
 
 class PDWorld:
-    startCell = (1,5)
-    #startCell = Cell(CellType.REGULAR, 1,5)
+    #startCell = (1,5)
+    startCell = Cell(CellType.REGULAR, (1,5))
     cells = []
     def __init__(self):
         self.cells = []
