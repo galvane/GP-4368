@@ -86,6 +86,32 @@ class Agent:
 
         return True
 
+    def getProjectedPos(self, currentState, action):
+        x = currentState.position[0]
+        y = currentState.position[1]
+
+        if action.type == ActionType.NORTH:
+            self.newx = x - 1
+            if self.validateMove(self.newx, y):
+                return self.world.getCell(self.newx, y) # New State
+        elif action.type == ActionType.EAST:
+            self.newy = y + 1
+            if self.validateMove(x, self.newy):
+                return self.world.getCell(x, self.newy)
+
+        elif action.type == ActionType.SOUTH:
+            self.newx = x + 1
+            if self.validateMove(self.newx, y):
+                return self.world.getCell(self.newx, y)
+
+        elif action.type == ActionType.WEST:
+            self.newy = y - 1
+            if self.validateMove(x, self.newy):
+                return self.world.getCell(x, self.newy)
+        else:
+            return currentState
+
+
     """PD-WORLD FOR SOME REASON HAS X AND Y COORDINATES FLIPPED"""
     def move(self, action):
         actionSuccessful = True
@@ -93,7 +119,6 @@ class Agent:
         x = self.agentPosition.position[0]
         y = self.agentPosition.position[1]
 
-        oldState = self.agentPosition
         if action.type == ActionType.NORTH:
             self.newx = x - 1
             if self.validateMove(self.newx, y):
@@ -133,7 +158,6 @@ class Agent:
         # else:
         #     print("agent attempted to move ", end="")
         #     print(action_type, end="")
-
 
 
     def validateMove(self, x, y):
