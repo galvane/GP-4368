@@ -16,8 +16,16 @@ class ActionType(Enum):
 class Action:
     type = None
     qValue = 0
+    reward = None
+
+
     def __init__(self,  type):
         self.type = type
+
+        if type == ActionType.PICKUP or type == ActionType.DROPOFF:
+            self.reward = 13
+        else:
+            self.reward = -1
 
     def setApplicability(self, isApplicable):
         self.isApplicable = isApplicable

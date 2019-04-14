@@ -1,5 +1,7 @@
 from tkinter import *
 #from tkinter.ttk import *
+from tkinter.ttk import Treeview
+
 from PIL import ImageTk, Image
 
 from algo.experiments import Experiment
@@ -17,6 +19,7 @@ class GUI:
     pdWorld = None
     labels = []
     blocks = []
+    qLabels = []
     agent = None
 
     def __init__(self, world, agent):
@@ -45,9 +48,21 @@ class GUI:
             self.updateAgentPosition(self.agent.agentPosition)
         if title == "Q-Table":
             self.qTable_window = window
-            for r in range(1,6) :
-                for c in range(1,6):
-                    Label(self.qTable_window, text = '0', borderwidth = 12).grid(row=r,column=c)
+            self.qTable_window.geometry("300x550")
+            for c in range (1,len(self.pdWorld.cells)+1):
+                for o in range (1, len(self.agent.operators)+1):
+                    qLabel = Label(self.qTable_window, text='0', borderwidth=0, width=2, height=0, relief=SOLID, fg="white", bg="black")
+                    qLabel.grid(row=c,column=o, sticky="E")
+                    qLabel.columnconfigure(10,weight=70)
+                    qLabel.rowconfigure(10, weight=10)
+                    self.qLabels.append(qLabel)
+
+                    Label(self.qTable_window, text=self.agent.operators[o-1].type.name, font=("Helvetica", 7)).grid(row=0,
+                                                                                                                  column=o,
+                                                                                                                  sticky="NSEW")
+                    Label(self.qTable_window, text=self.pdWorld.cells[c-1].position).grid(column=0, row=c, sticky="NSEW")
+
+
 
     def create_labels(self):
         self.block_img = PhotoImage(file="money-bag.png")
@@ -83,6 +98,11 @@ class GUI:
                 label = Label(self.pd_world_window, text='(%s,%s)' % i.position, bd=1, fg = "black", highlightthickness = 50, relief=GROOVE, background="black", font=("Helvetica", 12))
                 label.grid(row=i.position[0],column=i.position[1], sticky='NSEW')
                 self.labels.append(label)
+
+    # def updateQTable(self):
+    #     self.pd_world_window.update_idletasks()
+    #     for ql in self.qLabels:
+    #         if ql.cget("text") ==
 
     def updateAgentPosition(self, agentPos):
         self.pd_world_window.update_idletasks()

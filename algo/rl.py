@@ -37,9 +37,9 @@ class RL:
         print("Agent initial position: ", end="")
         print(oldAgentPos.__dict__)
         self.newAgentPos = None
-        random.seed(1)
+        random.seed(3)
         if self.policy.type == PolicyType.PRANDOM:
-            for x in range(0, 15): #self.steps
+            for x in range(0, 7): #self.steps
                 self.action = self.policy.pRandom()
                 self.logInfoBeforeAction()
                 self.agent.move(self.action) # perform action
@@ -47,16 +47,16 @@ class RL:
                 self.agent.interface.pd_world_window.update_idletasks()
                 self.logInfoAfterAction()
                 newAgentPos = self.agent.agentPosition
-                self.reward = self.agent.world.getCell(self.agent.agentPosition.position[0], self.agent.agentPosition.position[1]).reward # measure reward
+                self.reward = self.action.reward # measure reward
                 # Q(a,s)  (1-alpha)*Q(a,s) + alpha*[R(s’,a,s)+ γ*maxa’Q(a’,s’)]
-                oldAgentPos.qValue = (1-self.alpha) * oldAgentPos.qValue + self.alpha * (self.reward + self.discount_factor * self.maxFutureReward(newAgentPos))# update q
+                oldAgentPos.qValue = (1-self.alpha) * oldAgentPos.qValue + self.alpha * (self.action.reward + self.discount_factor * self.maxFutureReward(newAgentPos))# update q
 
     def maxFutureReward(self, currentState):
-        maxReward = 0
+        maxReward = -1
         for a in self.policy.applicableOperators:
-            newPosition = self.agent.getProjectedPos(currentState, a)
-            if self.agent.world.getCell(newPosition.position[0], newPosition.position[1]).reward > maxReward:
-                maxReward = self.agent.world.getCell(newPosition.position[0], newPosition.position[1]).reward
+            #newPosition = self.agent.getProjectedPos(currentState, a)
+            if a.reward >= maxReward:
+                maxReward = a.reward
         return maxReward
 
     def logInfoBeforeAction(self):
