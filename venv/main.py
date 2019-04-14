@@ -1,8 +1,10 @@
 from tkinter import *
+#from tkinter.ttk import *
+from PIL import ImageTk, Image
 
 from algo.experiments import Experiment
 from world.agent import Agent, ActionType
-from world.cell import CellType
+from world.cell import CellType, Cell
 from world.pdworld import PDWorld
 
 
@@ -26,19 +28,19 @@ class GUI:
         window.title(title)
         if title == "PD-World":
             self.pd_world_window = window
-            self.pd_world_window.grid_columnconfigure(0, weight=0)
+            self.pd_world_window.grid_columnconfigure(0, weight=1)
             self.pd_world_window.grid_columnconfigure(1, weight=1)
             self.pd_world_window.grid_columnconfigure(2, weight=1)
             self.pd_world_window.grid_columnconfigure(3, weight=1)
             self.pd_world_window.grid_columnconfigure(4, weight=1)
-            self.pd_world_window.grid_columnconfigure(5, weight=1)
-            self.pd_world_window.grid_rowconfigure(0, weight=0)
+            self.pd_world_window.grid_columnconfigure(5, weight=4)
+            self.pd_world_window.grid_rowconfigure(0, weight=1)
             self.pd_world_window.grid_rowconfigure(1, weight=1)
-            self.pd_world_window.grid_rowconfigure(2, weight=1)
+            self.pd_world_window.grid_rowconfigure(2, weight=0)
             self.pd_world_window.grid_rowconfigure(3, weight=1)
-            self.pd_world_window.grid_rowconfigure(4, weight=1)
+            self.pd_world_window.grid_rowconfigure(4, weight=0)
             self.pd_world_window.grid_rowconfigure(5, weight=1)
-            self.pd_world_window.geometry("600x600")
+            self.pd_world_window.geometry("625x625")
             self.create_labels()
             self.updateAgentPosition()
         if title == "Q-Table":
@@ -48,17 +50,36 @@ class GUI:
                     Label(self.qTable_window, text = '0', borderwidth = 12).grid(row=r,column=c)
 
     def create_labels(self):
+        self.block_img = PhotoImage(file="money-bag.png")
+        self.block_img = self.block_img.subsample(13)
+
+
         for i in self.pdWorld.cells:
             if i.type == CellType.PICKUP:
-                label = Label(self.pd_world_window, text='(%s,%s)' % i.position, bd=1, fg="white", relief=GROOVE, background="blue", font=("Helvetica", 12))
+                frame = Frame(self.pd_world_window, background="blue")
+                frame.grid(row=i.position[0], column=i.position[1], sticky="NSEW")
+
+                label = Label(frame, text='(%s,%s)' % i.position, bd=1, fg="blue", background="blue", font=("Helvetica", 12))
                 label.grid(row=i.position[0], column=i.position[1], sticky='NSEW')
+
+                for x in range (0,i.blocks):
+                    block = Label(frame, bd=5, relief=RIDGE, background="gold", compound=BOTTOM, height=1, width=1)
+                    block.grid(row=2, column=x, pady=75)
                 self.labels.append(label)
+
             elif i.type == CellType.DROPOFF:
-                label = Label(self.pd_world_window, text='(%s,%s)' % i.position, bd=1, fg="white", relief=GROOVE, background="green", font=("Helvetica", 12))
+                frame = Frame(self.pd_world_window, background="green")
+                frame.grid(row=i.position[0], column=i.position[1], sticky="NSEW")
+
+                label = Label(self.pd_world_window, text='(%s,%s)' % i.position, bd=1, fg="green", relief=GROOVE, background="green", font=("Helvetica", 12))
                 label.grid(row=i.position[0], column=i.position[1], sticky='NSEW')
                 self.labels.append(label)
+
             else:
-                label = Label(self.pd_world_window, text='(%s,%s)' % i.position, bd=1, fg = "white", highlightthickness = 50, relief=GROOVE, background="black", font=("Helvetica", 12))
+                frame = Frame(self.pd_world_window, background="black")
+                frame.grid(row=i.position[0], column=i.position[1], sticky="NSEW")
+
+                label = Label(self.pd_world_window, text='(%s,%s)' % i.position, bd=1, fg = "black", highlightthickness = 50, relief=GROOVE, background="black", font=("Helvetica", 12), compound = RIGHT)
                 label.grid(row=i.position[0],column=i.position[1], sticky='NSEW')
                 self.labels.append(label)
 
@@ -81,12 +102,18 @@ class GUI:
         self.experiment2_button.grid()
         self.experiment2_button.place(relx=0.5, rely=0.4, anchor=CENTER)
 
+
     def create_qTable(self):
         self.view_qTable_button = Button(self.main_window, text='View Q-Table', pady=10, width=25, background='#4d88ff',
                                          command=lambda: self.new_window("Q-Table"))
 
         self.view_qTable_button.grid()
         self.view_qTable_button.place(relx=0.5, rely=.25, anchor=S)
+
+    # def addBlocksToLabel(self, positionToAddBlock):
+    #     for l in self.labels:
+    #         if l.cget("text") == "("+','.join(map(str, positionToAddBlock))+ ")":
+    #             l.config(image=Cell.block_img)
 
     def experiment2(self):
         agent.setGUI(gui)
