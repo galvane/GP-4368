@@ -30,11 +30,13 @@ class RL:
         #while(not self.agent.world.isInTerminalState):
 
         oldAgentPos = self.agent.agentPosition
+        print("Agent initial position: ", end="")
+        print(oldAgentPos.__dict__)
         self.newAgentPos = None
         if self.policy.type == PolicyType.PRANDOM:
             for x in range(0, 5): #self.steps
-                #self.logInfoBeforeAction()
                 self.action = self.policy.pRandom()
+                self.logInfoBeforeAction()
                 self.agent.move(self.action) # perform action
                 self.agent.interface.updateAgentPosition(self.agent.agentPosition)
                 self.agent.interface.pd_world_window.update_idletasks()
@@ -53,12 +55,10 @@ class RL:
         return maxReward
 
     def logInfoBeforeAction(self):
-        print("Agent's position before move: ", end="")
-        print(self.agent.agentPosition.__dict__)
-
-    def logInfoAfterAction(self):
         print("Action Chosen at Random: ", end="")
         print(self.action.type.__dict__)
+
+    def logInfoAfterAction(self):
         print("Agent's position: ", end="")
         print(self.agent.agentPosition.__dict__)
 

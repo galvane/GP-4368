@@ -150,13 +150,13 @@ class Agent:
             self.agentPosition.blocks = self.agentPosition.blocks - 1
             self.addCarryingBlock()
             self.interface.removeBlock(self.agentPosition)
-            self.pd_world_window.update_idletasks()
+            self.interface.pd_world_window.update_idletasks()
 
         elif action.type == ActionType.DROPOFF:
             self.agentPosition.block = self.agentPosition.blocks + 1
             self.dropCarryingBlock()
             self.interface.addBlock(self.agentPosition)
-            self.pd_world_window.update_idletasks()
+            self.interface.pd_world_window.update_idletasks()
 
         else:
             print("[WARNING]: " + "Invalid operator!")

@@ -63,8 +63,8 @@ class GUI:
                 label.grid(row=i.position[0], column=i.position[1], sticky='NSEW')
 
                 for x in range (0,i.blocks):
-                    block = Label(frame, text=x, fg="blue",bd=0, relief=RIDGE, bg="blue", compound=BOTTOM, height=15, width=15, image=self.block_img , anchor='w', justify=CENTER, wraplength=100)
-                    block.grid(row=2, column=x, pady=75)
+                    block = Label(frame, text=x, fg="blue",bd=0, relief=RIDGE, bg="blue", compound=BOTTOM, height=15, width=15, image=self.block_img , anchor='w', justify=CENTER)
+                    block.grid(row=2, column=x, pady=0)
                     self.blocks.append((block, label))
                 self.labels.append(label)
 
@@ -88,7 +88,7 @@ class GUI:
         self.pd_world_window.update_idletasks()
         for l in self.labels:
             if l.cget("text") == "("+','.join(map(str, agentPos.position)) + ")":
-                l.config(image=self.agent.img)
+                l.config(image=self.agent.img, compound=BOTTOM, anchor='s')
                 l.image = agent.img
             else:
                 l.config(image='')
@@ -109,6 +109,8 @@ class GUI:
             if b[1].cget("text") == "(" + ','.join(map(str, cell.position)) + ")":
                 b[0].config(image='')
                 b[0].image = ''
+                self.pd_world_window.update_idletasks()
+                break
         self.pd_world_window.update_idletasks()
 
     def create_pdworld(self):
