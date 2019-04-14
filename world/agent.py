@@ -89,7 +89,7 @@ class Agent:
             return self.agentPosition.blocks > 0 and self.agentPosition.type == CellType.PICKUP
 
         elif action_type == ActionType.DROPOFF:
-            return self.agentPosition.blocks < 5 and self.agentPosition.type == CellType.DROPOFF
+            return self.agentPosition.blocks < 5 and self.agentPosition.type == CellType.DROPOFF and self.carryingBlocks > 0
 
         return True
 
@@ -149,10 +149,14 @@ class Agent:
         elif action.type == ActionType.PICKUP:
             self.agentPosition.blocks = self.agentPosition.blocks - 1
             self.addCarryingBlock()
+            self.interface.removeBlock(self.agentPosition)
+            self.pd_world_window.update_idletasks()
 
         elif action.type == ActionType.DROPOFF:
             self.agentPosition.block = self.agentPosition.blocks + 1
             self.dropCarryingBlock()
+            self.interface.addBlock(self.agentPosition)
+            self.pd_world_window.update_idletasks()
 
         else:
             print("[WARNING]: " + "Invalid operator!")

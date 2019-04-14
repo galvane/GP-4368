@@ -16,6 +16,7 @@ class GUI:
     qTable_window = None
     pdWorld = None
     labels = []
+    blocks = []
     agent = None
 
     def __init__(self, world, agent):
@@ -62,8 +63,9 @@ class GUI:
                 label.grid(row=i.position[0], column=i.position[1], sticky='NSEW')
 
                 for x in range (0,i.blocks):
-                    block = Label(frame, bd=0, relief=RIDGE, bg="blue", compound=BOTTOM, height=15, width=15, image=self.block_img , anchor='w', justify=CENTER, wraplength=100)
+                    block = Label(frame, text=x, fg="blue",bd=0, relief=RIDGE, bg="blue", compound=BOTTOM, height=15, width=15, image=self.block_img , anchor='w', justify=CENTER, wraplength=100)
                     block.grid(row=2, column=x, pady=75)
+                    self.blocks.append((block, label))
                 self.labels.append(label)
 
             elif i.type == CellType.DROPOFF:
@@ -83,6 +85,7 @@ class GUI:
                 self.labels.append(label)
 
     def updateAgentPosition(self, agentPos):
+        self.pd_world_window.update_idletasks()
         for l in self.labels:
             if l.cget("text") == "("+','.join(map(str, agentPos.position)) + ")":
                 l.config(image=self.agent.img)
@@ -90,6 +93,22 @@ class GUI:
             else:
                 l.config(image='')
                 l.image = ''
+        self.pd_world_window.update_idletasks()
+
+    def addBlock(self, cell):
+        self.pd_world_window.update_idletasks()
+        for b in self.blocks:
+            if b[1].cget("text") == "("+','.join(map(str, cell.position)) + ")":
+                b[0].config(image=self.block_img)
+                b[0].image = self.block_img
+        self.pd_world_window.update_idletasks()
+
+    def removeBlock(self, cell):
+        self.pd_world_window.update_idletasks()
+        for b in self.blocks:
+            if b[1].cget("text") == "(" + ','.join(map(str, cell.position)) + ")":
+                b[0].config(image='')
+                b[0].image = ''
         self.pd_world_window.update_idletasks()
 
     def create_pdworld(self):

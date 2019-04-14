@@ -32,8 +32,8 @@ class RL:
         oldAgentPos = self.agent.agentPosition
         self.newAgentPos = None
         if self.policy.type == PolicyType.PRANDOM:
-            for x in range(0, self.steps):
-                self.logInfoBeforeAction()
+            for x in range(0, 5): #self.steps
+                #self.logInfoBeforeAction()
                 self.action = self.policy.pRandom()
                 self.agent.move(self.action) # perform action
                 self.agent.interface.updateAgentPosition(self.agent.agentPosition)
