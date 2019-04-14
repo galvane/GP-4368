@@ -28,15 +28,17 @@ class RL:
         action = None
         self.reward = None
         #while(not self.agent.world.isInTerminalState):
-        for x in range(0,self.steps):
-            oldAgentPos = self.agent.agentPosition
-            self.newAgentPos = None
-            if self.policy.type == PolicyType.PRANDOM:
+
+        oldAgentPos = self.agent.agentPosition
+        self.newAgentPos = None
+        if self.policy.type == PolicyType.PRANDOM:
+            for x in range(0, self.steps):
                 self.logInfoBeforeAction()
                 self.action = self.policy.pRandom()
                 self.agent.move(self.action) # perform action
-                self.logInfoAfterAction()
                 self.agent.interface.updateAgentPosition(self.agent.agentPosition)
+                self.agent.interface.pd_world_window.update_idletasks()
+                self.logInfoAfterAction()
                 newAgentPos = self.agent.agentPosition
                 self.reward = self.agent.world.getCell(self.agent.agentPosition.position[0], self.agent.agentPosition.position[1]).reward # measure reward
                 # Q(a,s)  (1-alpha)*Q(a,s) + alpha*[R(s’,a,s)+ γ*maxa’Q(a’,s’)]

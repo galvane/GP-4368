@@ -32,6 +32,7 @@ class Agent:
     interface = None
     img = None
     operators = []
+    carryingBlocks = 0
 
     def __init__(self, world):
         self.img = PhotoImage(file="robot.png")
@@ -50,6 +51,12 @@ class Agent:
 
     def setGUI(self, gui):
         self.interface = gui
+
+    def addCarryingBlock(self):
+        self.carryingBlocks = self.carryingBlocks + 1
+
+    def dropCarryingBlock(self):
+        self.carryingBlocks = self.carryingBlocks - 1
 
     def validateActionType(self, action_type):
         x = self.agentPosition.position[0]
@@ -141,9 +148,11 @@ class Agent:
 
         elif action.type == ActionType.PICKUP:
             self.agentPosition.blocks = self.agentPosition.blocks - 1
+            self.addCarryingBlock()
 
         elif action.type == ActionType.DROPOFF:
             self.agentPosition.block = self.agentPosition.blocks + 1
+            self.dropCarryingBlock()
 
         else:
             print("[WARNING]: " + "Invalid operator!")

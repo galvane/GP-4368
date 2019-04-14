@@ -7,7 +7,6 @@ from world.agent import Agent, ActionType
 from world.cell import CellType, Cell
 from world.pdworld import PDWorld
 
-
 class GUI:
     main_window = Tk()
     main_window.title("Reinforcement Learning")
@@ -85,10 +84,13 @@ class GUI:
 
     def updateAgentPosition(self, agentPos):
         for l in self.labels:
-            if l.cget("text") == "("+','.join(map(str, agentPos.position))+ ")":
+            if l.cget("text") == "("+','.join(map(str, agentPos.position)) + ")":
                 l.config(image=self.agent.img)
+                l.image = agent.img
             else:
                 l.config(image='')
+                l.image = ''
+        self.pd_world_window.update_idletasks()
 
     def create_pdworld(self):
         self.view_world_button = Button(self.main_window, text='View World', pady=10, width=25, background='#4d88ff',
@@ -116,16 +118,17 @@ class GUI:
     #             l.config(image=Cell.block_img)
 
     def experiment2(self):
-        agent.setGUI(gui)
-        (Experiment(agent)).experiment2()
+        (Experiment(self.agent)).experiment2()
         #self.updateAgentPosition(self.agent.agentPosition)
 
     def generate(self):
         self.main_window.mainloop()
+        self.pd_world_window.mainloop()
 
 world = PDWorld()
 agent = Agent(world)
 gui = GUI(world, agent)
+agent.setGUI(gui)
 gui.create_pdworld()
 gui.create_qTable()
 gui.generate()
