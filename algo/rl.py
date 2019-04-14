@@ -50,6 +50,7 @@ class RL:
                 self.reward = self.action.reward # measure reward
                 # Q(a,s)  (1-alpha)*Q(a,s) + alpha*[R(s’,a,s)+ γ*maxa’Q(a’,s’)]
                 oldAgentPos.qValue = (1-self.alpha) * oldAgentPos.qValue + self.alpha * (self.action.reward + self.discount_factor * self.maxFutureReward(newAgentPos))# update q
+                self.agent.interface.updateQTable(oldAgentPos.position[0], oldAgentPos.position[1], round(oldAgentPos.qValue,3))
 
     def maxFutureReward(self, currentState):
         maxReward = -1

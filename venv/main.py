@@ -20,6 +20,7 @@ class GUI:
     labels = []
     blocks = []
     qLabels = []
+    qTable = {}
     agent = None
 
     def __init__(self, world, agent):
@@ -48,21 +49,19 @@ class GUI:
             self.updateAgentPosition(self.agent.agentPosition)
         if title == "Q-Table":
             self.qTable_window = window
-            self.qTable_window.geometry("300x550")
+            self.qTable_window.geometry("600x550")
             for c in range (1,len(self.pdWorld.cells)+1):
                 for o in range (1, len(self.agent.operators)+1):
-                    qLabel = Label(self.qTable_window, text='0', borderwidth=0, width=2, height=0, relief=SOLID, fg="white", bg="black")
+                    qLabel = Label(self.qTable_window, text='0', borderwidth=0, width=10, height=0, relief=SOLID, fg="white", bg="black")
                     qLabel.grid(row=c,column=o, sticky="E")
                     qLabel.columnconfigure(10,weight=70)
                     qLabel.rowconfigure(10, weight=10)
                     self.qLabels.append(qLabel)
-
+                    self.qTable[(c,o)] = qLabel
                     Label(self.qTable_window, text=self.agent.operators[o-1].type.name, font=("Helvetica", 7)).grid(row=0,
                                                                                                                   column=o,
                                                                                                                   sticky="NSEW")
                     Label(self.qTable_window, text=self.pdWorld.cells[c-1].position).grid(column=0, row=c, sticky="NSEW")
-
-
 
     def create_labels(self):
         self.block_img = PhotoImage(file="money-bag.png")
@@ -99,10 +98,11 @@ class GUI:
                 label.grid(row=i.position[0],column=i.position[1], sticky='NSEW')
                 self.labels.append(label)
 
-    # def updateQTable(self):
-    #     self.pd_world_window.update_idletasks()
-    #     for ql in self.qLabels:
-    #         if ql.cget("text") ==
+    def updateQTable(self, x,y, qValue):
+        self.qTable_window.update_idletasks()
+        if (x,y) in self.qTable:
+            self.qTable[(x,y)].configure(text=qValue)
+        self.qTable_window.update_idletasks()
 
     def updateAgentPosition(self, agentPos):
         self.pd_world_window.update_idletasks()
