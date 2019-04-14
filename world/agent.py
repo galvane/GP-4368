@@ -148,7 +148,7 @@ class Agent:
         else:
             print("[WARNING]: " + "Invalid operator!")
             actionSuccessful = False
-        self.interface.updateAgentPosition()
+
         return actionSuccessful
 
         # if successful:

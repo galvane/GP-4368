@@ -28,24 +28,26 @@ class RL:
         action = None
         self.reward = None
         #while(not self.agent.world.isInTerminalState):
-        for x in range (0,200):
+        for x in range(0,self.steps):
             oldAgentPos = self.agent.agentPosition
-            newAgentPos = None
+            self.newAgentPos = None
             if self.policy.type == PolicyType.PRANDOM:
                 self.logInfoBeforeAction()
                 self.action = self.policy.pRandom()
                 self.agent.move(self.action) # perform action
-                newAgentPos = self.agent.agentPosition
                 self.logInfoAfterAction()
-                self.reward = self.agent.world.getCell(self.agent.agentPosition[0], self.agent.agentPosition[1]).reward # measure reward
+                self.agent.interface.updateAgentPosition(self.agent.agentPosition)
+                newAgentPos = self.agent.agentPosition
+                self.reward = self.agent.world.getCell(self.agent.agentPosition.position[0], self.agent.agentPosition.position[1]).reward # measure reward
                 # Q(a,s)  (1-alpha)*Q(a,s) + alpha*[R(s’,a,s)+ γ*maxa’Q(a’,s’)]
                 oldAgentPos.qValue = (1-self.alpha) * oldAgentPos.qValue + self.alpha * (self.reward + self.discount_factor * self.maxFutureReward(newAgentPos))# update q
 
-    def maxFutureReward(self, newAgentPos):
+    def maxFutureReward(self, currentState):
         maxReward = 0
         for a in self.policy.applicableOperators:
-            if self.agent.world.getCell(self.agent.getProjectedPos(newAgentPos, a)).reward > maxReward:
-                maxReward = self.agent.world.getCell(self.agent.getProjectedPos(newAgentPos, a)).reward
+            newPosition = self.agent.getProjectedPos(currentState, a)
+            if self.agent.world.getCell(newPosition.position[0], newPosition.position[1]).reward > maxReward:
+                maxReward = self.agent.world.getCell(newPosition.position[0], newPosition.position[1]).reward
         return maxReward
 
     def logInfoBeforeAction(self):

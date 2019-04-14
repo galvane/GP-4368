@@ -42,7 +42,7 @@ class GUI:
             self.pd_world_window.grid_rowconfigure(5, weight=1)
             self.pd_world_window.geometry("650x650")
             self.create_labels()
-            self.updateAgentPosition()
+            self.updateAgentPosition(self.agent.agentPosition)
         if title == "Q-Table":
             self.qTable_window = window
             for r in range(1,6) :
@@ -79,13 +79,13 @@ class GUI:
                 frame = Frame(self.pd_world_window, background="black")
                 frame.grid(row=i.position[0], column=i.position[1], sticky="NSEW")
 
-                label = Label(self.pd_world_window, text='(%s,%s)' % i.position, bd=1, fg = "black", highlightthickness = 50, relief=GROOVE, background="black", font=("Helvetica", 12), compound = RIGHT)
+                label = Label(self.pd_world_window, text='(%s,%s)' % i.position, bd=1, fg = "black", highlightthickness = 50, relief=GROOVE, background="black", font=("Helvetica", 12))
                 label.grid(row=i.position[0],column=i.position[1], sticky='NSEW')
                 self.labels.append(label)
 
-    def updateAgentPosition(self):
+    def updateAgentPosition(self, agentPos):
         for l in self.labels:
-            if l.cget("text") == "("+','.join(map(str, agent.agentPosition.position))+ ")":
+            if l.cget("text") == "("+','.join(map(str, agentPos.position))+ ")":
                 l.config(image=self.agent.img)
             else:
                 l.config(image='')
@@ -118,7 +118,7 @@ class GUI:
     def experiment2(self):
         agent.setGUI(gui)
         (Experiment(agent)).experiment2()
-        self.updateAgentPosition()
+        #self.updateAgentPosition(self.agent.agentPosition)
 
     def generate(self):
         self.main_window.mainloop()
