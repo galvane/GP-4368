@@ -27,7 +27,7 @@ class RL:
         self.position = self.agent.agentPosition #initial state
         action = None
         #while(not self.agent.world.isInTerminalState):
-        for x in range (0,2):
+        for x in range (0,200):
             if self.policy.type == PolicyType.PRANDOM:
                 print("Agent's position before move: ", end="")
                 print(self.agent.agentPosition.__dict__)

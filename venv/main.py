@@ -40,7 +40,7 @@ class GUI:
             self.pd_world_window.grid_rowconfigure(3, weight=1)
             self.pd_world_window.grid_rowconfigure(4, weight=0)
             self.pd_world_window.grid_rowconfigure(5, weight=1)
-            self.pd_world_window.geometry("625x625")
+            self.pd_world_window.geometry("650x650")
             self.create_labels()
             self.updateAgentPosition()
         if title == "Q-Table":
@@ -51,7 +51,7 @@ class GUI:
 
     def create_labels(self):
         self.block_img = PhotoImage(file="money-bag.png")
-        self.block_img = self.block_img.subsample(13)
+        self.block_img = self.block_img.subsample(30)
 
 
         for i in self.pdWorld.cells:
@@ -63,7 +63,7 @@ class GUI:
                 label.grid(row=i.position[0], column=i.position[1], sticky='NSEW')
 
                 for x in range (0,i.blocks):
-                    block = Label(frame, bd=5, relief=RIDGE, background="gold", compound=BOTTOM, height=1, width=1)
+                    block = Label(frame, bd=0, relief=RIDGE, bg="blue", compound=BOTTOM, height=15, width=15, image=self.block_img , anchor='w', justify=CENTER, wraplength=100)
                     block.grid(row=2, column=x, pady=75)
                 self.labels.append(label)
 

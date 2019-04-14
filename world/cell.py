@@ -1,4 +1,5 @@
 from enum import Enum
+from tkinter import PhotoImage
 
 
 class CellType(Enum):
@@ -12,6 +13,8 @@ class Cell:
         self.type = type
         self.hasAgent = False
         self.blocks = 5 if (self.type == CellType.PICKUP) else 0
+        # self.block_img = PhotoImage(file="money-bag.png")
+        # self.block_img = self.img.subsample(23)
         self.position = coordinates
         self.qValue = 0
         self.reward = None

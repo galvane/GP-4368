@@ -1,6 +1,8 @@
 from tkinter import *
 from enum import Enum
 
+from PIL import ImageTk
+
 from world.cell import CellType
 
 
@@ -121,6 +123,7 @@ class Agent:
         else:
             print("[WARNING]: " + "Invalid operator!")
             actionSuccessful = False
+        self.interface.updateAgentPosition()
         return actionSuccessful
 
         # if successful:
@@ -130,7 +133,7 @@ class Agent:
         # else:
         #     print("agent attempted to move ", end="")
         #     print(action_type, end="")
-        self.interface.updateAgentPosition()
+
 
 
     def validateMove(self, x, y):
