@@ -22,8 +22,12 @@ class RL:
         self.agent = agent
 
     def qLearn(self):
-        self.position = self.agent.position #initial state
-        while(not self.agent.world.isInTerminalState):
+        self.position = self.agent.agentPosition #initial state
+        action = None
+        #while(not self.agent.world.isInTerminalState):
+        if self.policy.type == PolicyType.PRANDOM:
+            action = self.policy.pRandom()
+            self.agent.move(action.actionType)
 
-    def sarsa(self):
+    #def sarsa(self):
 

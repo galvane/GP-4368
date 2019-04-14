@@ -23,7 +23,7 @@ class Action:
         self.isApplicable = isApplicable
 
     def getApplicability(self, agent):
-        return agent.move(self.actionType)
+        return agent.validateActionType(self.actionType)
 
 class Agent:
     world = None
@@ -37,65 +37,99 @@ class Agent:
         self.world = world
         self.agentPosition = world.startCell
 
-        op = [Action(ActionType.NORTH),
+        op = [Action(ActionType.PICKUP),
+              Action(ActionType.DROPOFF),
+              Action(ActionType.NORTH),
               Action(ActionType.EAST),
               Action(ActionType.SOUTH),
               Action(ActionType.WEST)]
-        self.operators.append(op)
+        self.operators.extend(op)
 
-    """PD-WORLD FOR SOME REASON HAS X AND Y COORDINATES FLIPPED"""
-    def move(self, action_type):
 
-        canMove = True
+
+    def validateActionType(self, action_type):
         x = self.agentPosition.position[0]
         y = self.agentPosition.position[1]
 
-        oldPosition = self.agentPosition
+        oldState = self.agentPosition
         if action_type == ActionType.NORTH:
             self.newx = x - 1
-            self.agentPosition = self.validateMove(self.newx, y)
+            if not self.validateMove(self.newx, y):
+                return False
+
         elif action_type == ActionType.EAST:
             self.newy = y + 1
-            self.agentPosition = self.validateMove(x, self.newy)
+            if not self.validateMove(x, self.newy):
+                return False
+
+
         elif action_type == ActionType.SOUTH:
             self.newx = x + 1
-            self.agentPosition = self.validateMove(self.newx, y)
+            if not self.validateMove(self.newx, y):
+                return False
+
+
         elif action_type == ActionType.WEST:
             self.newy = y - 1
-            self.agentPosition = self.validateMove(x, self.newy)
+            if not self.validateMove(x, self.newy):
+                return False
+
         elif action_type == ActionType.PICKUP:
-            canMove = self.agentPosition.blocks > 0
+            return self.agentPosition.blocks > 0 and self.agentPosition.type == CellType.PICKUP
+
         elif action_type == ActionType.DROPOFF:
-            canMove = self.agentPosition.blocks < 5
+            return self.agentPosition.blocks < 5 and self.agentPosition.type == CellType.DROPOFF
+
+        return True
+
+    """PD-WORLD FOR SOME REASON HAS X AND Y COORDINATES FLIPPED"""
+    def move(self, action_type):
+        x = self.agentPosition.position[0]
+        y = self.agentPosition.position[1]
+
+        oldState = self.agentPosition
+        if action_type == ActionType.NORTH:
+            self.newx = x - 1
+            if self.validateActionType(action_type):
+                self.agentPosition = self.world.getCell(self.newx, y)
+
+        elif action_type == ActionType.EAST:
+            self.newy = y + 1
+            if self.validateMove(x, self.newy):
+                self.agentPosition = self.world.getCell(x, self.newy)
+
+        elif action_type == ActionType.SOUTH:
+            self.newx = x + 1
+            if self.validateMove(self.newx, y):
+                self.agentPosition = self.world.getCell(self.newx, y)
+
+        elif action_type == ActionType.WEST:
+            self.newy = y - 1
+            if self.validateMove(x, self.newy):
+                self.agentPosition = self.world.getCell(x, self.newy)
+
         else:
             print("[WARNING]: " + "Invalid operator!")
-            canMove = False
 
-
-        print("applied action: " ,end ="")
-        print(action_type, end ="")
-        print(" ==> agent moved from " + "(" ,oldPosition, ")" + " to " + "(" ,self.agentPosition,")")
-
-        return canMove
+        # if successful:
+        #     print("applied action: ", end ="")
+        #     print(action_type, end ="")
+        #     print(" ==> agent moved from " + "(" ,oldState.position, ")" + " to " + "(" ,self.agentPosition.position,")")
+        # else:
+        #     print("agent attempted to move ", end="")
+        #     print(action_type, end="")
 
 
     def validateMove(self, x, y):
-        newx = x
-        newy = y
         if self.validateNewX(x) and self.validateNewY(y):
-            return self.world.getCell(newx, newy)
-        elif self.validateNewX(x) and not self.validateNewY(y):
-            return self.world.getCell(newx, y)
-        elif not self.validateNewX(x) and self.validateNewY(y):
-            return self.world.getCell(x, newy)
-        else:
-            return self.world.getCell(x, y)
+            return True
+        return False
 
     def validateNewX(self, x):
-        if x > 5 or x < 0:
+        if x > 5 or x < 1:
             return False
         return True
     def validateNewY(self, y):
-        if y > 5 or y < 0:
+        if y > 5 or y < 1:
             return False
         return True

@@ -4,6 +4,16 @@
     (break ties by rolling a dice for operators with the same q-value) 
     with probability 0.8 and choose a different applicable operator randomly with probability 0.2. """
 import random
+from enum import Enum
+
+from world.agent import Action, ActionType
+from world.cell import CellType
+
+
+class PolicyType(Enum):
+    PRANDOM = 1
+    PEXPLOIT = 2
+    PGREEDY = 3
 
 class Policy:
     applicableOperators = []
@@ -11,23 +21,30 @@ class Policy:
     canDropoff = True
     world = None
     agent = None
-    def __init__(self, world, agent):
-        self.world = world
+    type = None
+    def __init__(self, type, agent):
+        self.type = type
+        self.world = agent.world
         self.agent = agent
         for o in self.agent.operators:
-            if o.getApplicability() is True:
+            if o.getApplicability(self.agent) is True:
                 self.applicableOperators.append(o)
 
-
-    def pRandom(self, operator):
-        if(self.canDropoff and self.canPickup):
-            return operator
+    # returns action in accordance with the random action policy
+    def pRandom(self):
+        self.type = PolicyType.PRANDOM
+        if Action.getApplicability(Action(ActionType.DROPOFF), self.agent):
+            return Action(ActionType.DROPOFF)
+        elif Action.getApplicability(Action(ActionType.PICKUP), self.agent):
+            return Action(ActionType.PICKUP)
         else:
-            randomOperator = random.randint(0,self.applicableOperators.__len__())
+            randomOperator = random.randint(0,self.applicableOperators.__len__()-1)
             if self.applicableOperators is not None:
                 return self.applicableOperators[randomOperator]
 
+    # returns action in accordance with the exploit action policy
     def pExploit(self, operator):
+        self.type = PolicyType.PEXPLOIT
         if (self.canDropoff and self.canPickup):
             return operator
         else:
@@ -45,7 +62,9 @@ class Policy:
                     op = o
             return op
 
+    # returns action in accordance with the greedy action policy
     def pGreedy(self, operator):
+        self.type = PolicyType.PGREEDY
         if (self.canDropoff and self.canPickup):
             return operator
         else:
