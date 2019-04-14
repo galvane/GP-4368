@@ -1,6 +1,5 @@
 from tkinter import *
 from enum import Enum
-
 from PIL import ImageTk
 
 from world.cell import CellType
@@ -32,7 +31,7 @@ class Agent:
     interface = None
     img = None
     operators = []
-    applicableOperators = []
+    applicableOperators = set()
     carriesBlock = False
 
     def __init__(self, world):
@@ -55,7 +54,7 @@ class Agent:
     def updateApplicableOperators(self):
         for o in self.operators:
             if o.getApplicability(self) is True:
-                self.applicableOperators.append(o)
+                self.applicableOperators.add(o)
 
     def addCarryingBlock(self):
         self.carriesBlock = True

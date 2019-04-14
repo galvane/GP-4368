@@ -16,7 +16,7 @@ class PolicyType(Enum):
     PGREEDY = 3
 
 class Policy:
-    applicableOperators = []
+    applicableOperators = set()
     canPickup = True
     canDropoff = True
     world = None
@@ -39,7 +39,8 @@ class Policy:
         else:
             randomOperator = random.randint(0,self.applicableOperators.__len__()-1)
             if self.applicableOperators is not None:
-                return Action(self.applicableOperators[randomOperator].type)
+                ap = list(self.applicableOperators)
+                return Action(ap[randomOperator].type)
 
     # returns action in accordance with the exploit action policy
     def pExploit(self, operator):
