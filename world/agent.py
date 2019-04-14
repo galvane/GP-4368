@@ -32,7 +32,8 @@ class Agent:
     interface = None
     img = None
     operators = []
-    carryingBlocks = 0
+    applicableOperators = []
+    carriesBlock = False
 
     def __init__(self, world):
         self.img = PhotoImage(file="robot.png")
@@ -48,15 +49,19 @@ class Agent:
               Action(ActionType.WEST)]
         self.operators.extend(op)
 
-
     def setGUI(self, gui):
         self.interface = gui
 
+    def updateApplicableOperators(self):
+        for o in self.operators:
+            if o.getApplicability(self) is True:
+                self.applicableOperators.append(o)
+
     def addCarryingBlock(self):
-        self.carryingBlocks = self.carryingBlocks + 1
+        self.carriesBlock = True
 
     def dropCarryingBlock(self):
-        self.carryingBlocks = self.carryingBlocks - 1
+        self.carriesBlock = False
 
     def validateActionType(self, action_type):
         x = self.agentPosition.position[0]
@@ -89,7 +94,7 @@ class Agent:
             return self.agentPosition.blocks > 0 and self.agentPosition.type == CellType.PICKUP
 
         elif action_type == ActionType.DROPOFF:
-            return self.agentPosition.blocks < 5 and self.agentPosition.type == CellType.DROPOFF and self.carryingBlocks > 0
+            return self.agentPosition.blocks < 5 and self.agentPosition.type == CellType.DROPOFF and self.carriesBlock > 0
 
         return True
 
@@ -130,22 +135,26 @@ class Agent:
             self.newx = x - 1
             if self.validateMove(self.newx, y):
                 self.agentPosition = self.world.getCell(self.newx, y)
-
+            else:
+                actionSuccessful = False
         elif action.type == ActionType.EAST:
             self.newy = y + 1
             if self.validateMove(x, self.newy):
                 self.agentPosition = self.world.getCell(x, self.newy)
-
+            else:
+                actionSuccessful = False
         elif action.type == ActionType.SOUTH:
             self.newx = x + 1
             if self.validateMove(self.newx, y):
                 self.agentPosition = self.world.getCell(self.newx, y)
-
+            else:
+                actionSuccessful = False
         elif action.type == ActionType.WEST:
             self.newy = y - 1
             if self.validateMove(x, self.newy):
                 self.agentPosition = self.world.getCell(x, self.newy)
-
+            else:
+                actionSuccessful = False
         elif action.type == ActionType.PICKUP:
             self.agentPosition.blocks = self.agentPosition.blocks - 1
             self.addCarryingBlock()
@@ -162,6 +171,7 @@ class Agent:
             print("[WARNING]: " + "Invalid operator!")
             actionSuccessful = False
 
+        self.updateApplicableOperators()
         return actionSuccessful
 
         # if successful:

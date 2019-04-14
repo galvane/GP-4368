@@ -26,9 +26,8 @@ class Policy:
         self.type = type
         self.world = agent.world
         self.agent = agent
-        for o in self.agent.operators:
-            if o.getApplicability(self.agent) is True:
-                self.applicableOperators.append(o)
+        self.agent.updateApplicableOperators()
+        self.applicableOperators = self.agent.applicableOperators
 
     # returns action in accordance with the random action policy
     def pRandom(self):

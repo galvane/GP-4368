@@ -1,7 +1,11 @@
 # reinforcement learning
+import random
+
 from numpy.core._dtype import __repr__
 
 from algo.policies import PolicyType
+from world.agent import Action, ActionType
+
 
 class RL:
     alpha = None
@@ -33,8 +37,9 @@ class RL:
         print("Agent initial position: ", end="")
         print(oldAgentPos.__dict__)
         self.newAgentPos = None
+        random.seed(1)
         if self.policy.type == PolicyType.PRANDOM:
-            for x in range(0, 5): #self.steps
+            for x in range(0, 15): #self.steps
                 self.action = self.policy.pRandom()
                 self.logInfoBeforeAction()
                 self.agent.move(self.action) # perform action
