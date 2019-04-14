@@ -15,6 +15,8 @@ class RL:
     policy = None
     policy2 = None
     agent = None
+    #customActionsForDebugging = [Action(ActionType.WEST), Action(ActionType.WEST), Action(ActionType.SOUTH), Action(ActionType.SOUTH), Action(ActionType.PICKUP), Action(ActionType.SOUTH), Action(ActionType.SOUTH), Action(ActionType.DROPOFF)]
+    customActionsForDebugging = [Action(ActionType.WEST), Action(ActionType.WEST), Action(ActionType.SOUTH), Action(ActionType.SOUTH), Action(ActionType.PICKUP), Action(ActionType.SOUTH)]
 
     def __init__(self, alpha, dF, steps, policy, steps2, policy2):
         self.alpha = alpha # learning rate
@@ -37,20 +39,27 @@ class RL:
         print("Agent initial position: ", end="")
         print(oldAgentPos.__dict__)
         self.newAgentPos = None
-        random.seed(3)
+        random.seed(1)
+        a = 0
         if self.policy.type == PolicyType.PRANDOM:
-            for x in range(0, 7): #self.steps
-                self.action = self.policy.pRandom()
+            for x in range(0, len(self.customActionsForDebugging)): #self.steps
+                oldAgentPos = self.agent.agentPosition
+                #self.action = self.policy.pRandom()
+                self.action = self.customActionsForDebugging[a]
                 self.logInfoBeforeAction()
                 self.agent.move(self.action) # perform action
-                self.agent.interface.updateAgentPosition(self.agent.agentPosition)
+
                 self.agent.interface.pd_world_window.update_idletasks()
+                self.agent.interface.updateAgentPosition(self.agent.agentPosition)
+
                 self.logInfoAfterAction()
                 newAgentPos = self.agent.agentPosition
                 self.reward = self.action.reward # measure reward
                 # Q(a,s)  (1-alpha)*Q(a,s) + alpha*[R(s’,a,s)+ γ*maxa’Q(a’,s’)]
                 oldAgentPos.qValue = (1-self.alpha) * oldAgentPos.qValue + self.alpha * (self.action.reward + self.discount_factor * self.maxFutureReward(newAgentPos))# update q
                 self.agent.interface.updateQTable(oldAgentPos.position[0], oldAgentPos.position[1], round(oldAgentPos.qValue,3))
+
+                a = a + 1
 
     def maxFutureReward(self, currentState):
         maxReward = -1

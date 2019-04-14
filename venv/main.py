@@ -49,18 +49,18 @@ class GUI:
             self.updateAgentPosition(self.agent.agentPosition)
         if title == "Q-Table":
             self.qTable_window = window
-            self.qTable_window.geometry("600x550")
+            self.qTable_window.geometry("290x550")
             for c in range (1,len(self.pdWorld.cells)+1):
                 for o in range (1, len(self.agent.operators)+1):
-                    qLabel = Label(self.qTable_window, text='0', borderwidth=0, width=10, height=0, relief=SOLID, fg="white", bg="black")
-                    qLabel.grid(row=c,column=o, sticky="E")
-                    qLabel.columnconfigure(10,weight=70)
-                    qLabel.rowconfigure(10, weight=10)
+                    qLabel = Label(self.qTable_window, text='0', borderwidth=0, width=5, height=1, relief=SOLID, fg="white", bg="black")
+                    qLabel.grid(row=c,column=o, sticky="", padx=2)
+                    qLabel.columnconfigure(0,weight=1)
+                    qLabel.rowconfigure(0, weight=1)
                     self.qLabels.append(qLabel)
                     self.qTable[(c,o)] = qLabel
                     Label(self.qTable_window, text=self.agent.operators[o-1].type.name, font=("Helvetica", 7)).grid(row=0,
                                                                                                                   column=o,
-                                                                                                                  sticky="NSEW")
+                                                                                                                  sticky="EW")
                     Label(self.qTable_window, text=self.pdWorld.cells[c-1].position).grid(column=0, row=c, sticky="NSEW")
 
     def create_labels(self):
@@ -71,14 +71,14 @@ class GUI:
         for i in self.pdWorld.cells:
             if i.type == CellType.PICKUP:
                 frame = Frame(self.pd_world_window, background="blue")
-                frame.grid(row=i.position[0], column=i.position[1], sticky="NSEW")
+                frame.grid(row=i.position[0], column=i.position[1], sticky="NSEW", pady=0, padx=0)
 
                 label = Label(frame, text='(%s,%s)' % i.position, bd=1, fg="blue", background="blue", font=("Helvetica", 12))
-                label.grid(row=i.position[0], column=i.position[1], sticky='NSEW')
+                label.grid(row=i.position[0], column=i.position[1], sticky='NSEW', pady=0, padx=0)
 
                 for x in range (0,i.blocks):
-                    block = Label(frame, text=x, fg="blue",bd=0, relief=RIDGE, bg="blue", compound=BOTTOM, height=15, width=15, image=self.block_img , anchor='w', justify=CENTER)
-                    block.grid(row=2, column=x, pady=0)
+                    block = Label(frame, fg="blue",bd=0, relief=RIDGE, bg="blue", compound=BOTTOM, height=15, width=15, image=self.block_img , anchor='center')
+                    block.grid(row=2, column=x, pady=0, padx=0)
                     self.blocks.append((block, label))
                 self.labels.append(label)
 
@@ -99,16 +99,16 @@ class GUI:
                 self.labels.append(label)
 
     def updateQTable(self, x,y, qValue):
-        self.qTable_window.update_idletasks()
+        #self.qTable_window.update_idletasks()
         if (x,y) in self.qTable:
             self.qTable[(x,y)].configure(text=qValue)
-        self.qTable_window.update_idletasks()
+        #self.qTable_window.update_idletasks()
 
     def updateAgentPosition(self, agentPos):
         self.pd_world_window.update_idletasks()
         for l in self.labels:
             if l.cget("text") == "("+','.join(map(str, agentPos.position)) + ")":
-                l.config(image=self.agent.img, compound=BOTTOM, anchor='s')
+                l.config(image=self.agent.img)
                 l.image = agent.img
             else:
                 l.config(image='')
@@ -124,14 +124,12 @@ class GUI:
         self.pd_world_window.update_idletasks()
 
     def removeBlock(self, cell):
-        self.pd_world_window.update_idletasks()
         for b in self.blocks:
             if b[1].cget("text") == "(" + ','.join(map(str, cell.position)) + ")":
-                b[0].config(image='')
-                b[0].image = ''
+                b[0].destroy()
+                #b[0].image = ''
                 self.pd_world_window.update_idletasks()
                 break
-        self.pd_world_window.update_idletasks()
 
     def create_pdworld(self):
         self.view_world_button = Button(self.main_window, text='View World', pady=10, width=25, background='#4d88ff',
