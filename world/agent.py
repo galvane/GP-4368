@@ -108,6 +108,12 @@ class Agent:
             if self.validateMove(x, self.newy):
                 self.agentPosition = self.world.getCell(x, self.newy)
 
+        elif action_type == ActionType.PICKUP:
+            self.agentPosition.blocks = self.agentPosition.blocks - 1
+
+        elif action_type == ActionType.DROPOFF:
+            self.agentPosition.block = self.agentPosition.blocks + 1
+
         else:
             print("[WARNING]: " + "Invalid operator!")
 
