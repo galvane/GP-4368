@@ -136,10 +136,26 @@ class GUI:
         self.view_world_button.grid()
         self.view_world_button.place(relx=0.5, rely=0.1, anchor=CENTER)
 
+        self.experiment1_button = Button(self.main_window, text='Experiment 1', pady=10, width=25, background='#ADFF2F',
+                                         command=lambda: self.experiment1())
         self.experiment2_button = Button(self.main_window, text='Experiment 2', pady=10, width=25, background ='#ADFF2F',
                                          command=lambda: self.experiment2())
+        self.experiment3_button = Button(self.main_window, text='Experiment 3', pady=10, width=25, background='#ADFF2F',
+                                         command=lambda: self.experiment2())
+        self.experiment4_button = Button(self.main_window, text='Experiment 4', pady=10, width=25, background='#ADFF2F',
+                                         command=lambda: self.experiment2())
+        self.experiment5_button = Button(self.main_window, text='Experiment 5', pady=10, width=25, background='#ADFF2F',
+                                         command=lambda: self.experiment2())
+        self.experiment1_button.grid()
+        self.experiment1_button.place(relx=0.5, rely=0.4, anchor=CENTER)
         self.experiment2_button.grid()
-        self.experiment2_button.place(relx=0.5, rely=0.4, anchor=CENTER)
+        self.experiment2_button.place(relx=0.5, rely=0.5, anchor=CENTER)
+        self.experiment3_button.grid()
+        self.experiment3_button.place(relx=0.5, rely=0.6, anchor=CENTER)
+        self.experiment4_button.grid()
+        self.experiment4_button.place(relx=0.5, rely=0.7, anchor=CENTER)
+        self.experiment5_button.grid()
+        self.experiment5_button.place(relx=0.5, rely=0.8, anchor=CENTER)
 
 
     def create_qTable(self):

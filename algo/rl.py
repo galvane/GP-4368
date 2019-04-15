@@ -60,6 +60,18 @@ class RL:
                 self.agent.interface.updateQTable(oldAgentPos.position[0], oldAgentPos.position[1], round(oldAgentPos.qValue,3))
 
                 a = a + 1
+        if self.policy.type == PolicyType.PGREEDY:
+            for x in range(0, len(self.customActionsForDebugging)): #self.steps
+                oldAgentPos = self.agent.agentPosition
+
+        if self.policy.type == PolicyType.PEXPLOIT:
+            for x in range(0, len(self.customActionsForDebugging)): #self.steps
+                oldAgentPos = self.agent.agentPosition
+
+    def sarsa(self):
+        self.position = self.agent.agentPosition  # initial state
+        action = None
+        self.reward = None
 
     def maxFutureReward(self, currentState):
         maxReward = -1
