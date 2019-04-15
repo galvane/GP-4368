@@ -56,6 +56,9 @@ class Agent:
               Action(ActionType.WEST)]
         self.operators.extend(op)
 
+    def __str__(self):
+        return str(self.agentPosition) + ' ' + str(int(self.carriesBlock == True))
+
     def setGUI(self, gui):
         self.interface = gui
 
@@ -98,10 +101,10 @@ class Agent:
                 return False
 
         elif action_type == ActionType.PICKUP:
-            return self.agentPosition.blocks > 0 and self.agentPosition.type == CellType.PICKUP
+            return self.agentPosition.blocks > 0 and self.agentPosition.type == CellType.PICKUP and (not self.carriesBlock)
 
         elif action_type == ActionType.DROPOFF:
-            return self.agentPosition.blocks < 5 and self.agentPosition.type == CellType.DROPOFF and self.carriesBlock > 0
+            return self.agentPosition.blocks < 5 and self.agentPosition.type == CellType.DROPOFF and self.carriesBlock
 
         return True
 
@@ -163,14 +166,16 @@ class Agent:
             else:
                 actionSuccessful = False
         elif action.type == ActionType.PICKUP:
-            self.agentPosition.blocks = self.agentPosition.blocks - 1
-            self.addCarryingBlock()
+            if self.validateActionType(action.type):
+                self.agentPosition.blocks = self.agentPosition.blocks - 1
+                self.addCarryingBlock()
             self.interface.removeBlock(self.agentPosition)
             self.interface.pd_world_window.update_idletasks()
 
         elif action.type == ActionType.DROPOFF:
-            self.agentPosition.block = self.agentPosition.blocks + 1
-            self.dropCarryingBlock()
+            if self.validateActionType(action.type):
+                self.agentPosition.block = self.agentPosition.blocks + 1
+                self.dropCarryingBlock()
             self.interface.addBlock(self.agentPosition)
             self.interface.pd_world_window.update_idletasks()
 
