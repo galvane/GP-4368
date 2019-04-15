@@ -73,6 +73,10 @@ class RL:
         action = None
         self.reward = None
 
+        oldAgentPos = self.agent.agentPosition
+        print("Agent initial position: ", end="")
+        print(oldAgentPos.__dict__)
+
     def maxFutureReward(self, currentState):
         maxReward = -1
         for a in self.policy.applicableOperators:
@@ -90,5 +94,4 @@ class RL:
         print(self.agent.agentPosition.__dict__)
 
 
-    #def sarsa(self):
 

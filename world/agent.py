@@ -1,6 +1,6 @@
 from tkinter import *
 from enum import Enum
-from PIL import ImageTk
+#from PIL import ImageTk
 
 from world.cell import CellType
 

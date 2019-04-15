@@ -1,6 +1,6 @@
 from tkinter import *
 
-from PIL import ImageTk, Image
+#from PIL import ImageTk, Image
 
 from algo.experiments import Experiment
 from world.agent import Agent, ActionType
