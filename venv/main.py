@@ -119,7 +119,8 @@ class GUI:
             if b[1].cget("text") == "("+','.join(map(str, cell.position)) + ")":
                 b[0].config(compound=BOTTOM, height=15, width=15, image=self.block_img , anchor='w', justify=CENTER)
                 b[0].image = self.block_img
-        self.pd_world_window.update_idletasks()
+                self.pd_world_window.update_idletasks()
+                break
 
     def removeBlock(self, cell):
         for b in self.blocks:
