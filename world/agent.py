@@ -169,14 +169,14 @@ class Agent:
             if self.validateActionType(action.type):
                 self.agentPosition.blocks = self.agentPosition.blocks - 1
                 self.addCarryingBlock()
-            self.interface.removeBlock(self.agentPosition)
+                self.interface.removeBlock(self.agentPosition)
             self.interface.pd_world_window.update_idletasks()
 
         elif action.type == ActionType.DROPOFF:
             if self.validateActionType(action.type):
                 self.agentPosition.block = self.agentPosition.blocks + 1
                 self.dropCarryingBlock()
-            self.interface.addBlock(self.agentPosition)
+                self.interface.addBlock(self.agentPosition)
             self.interface.pd_world_window.update_idletasks()
 
         else:

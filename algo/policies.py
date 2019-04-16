@@ -63,10 +63,12 @@ class Policy:
             return op
 
     # returns action in accordance with the greedy action policy
-    def pGreedy(self, operator):
+    def pGreedy(self):
         self.type = PolicyType.PGREEDY
-        if (self.canDropoff and self.canPickup):
-            return operator
+        if Action.getApplicability(Action(ActionType.DROPOFF), self.agent):
+            return Action(ActionType.DROPOFF)
+        elif Action.getApplicability(Action(ActionType.PICKUP), self.agent):
+            return Action(ActionType.PICKUP)
         else:
             highestQValue = 0
             op = None
