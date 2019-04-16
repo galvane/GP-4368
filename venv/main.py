@@ -137,7 +137,7 @@ class GUI:
         self.view_world_button.place(relx=0.5, rely=0.1, anchor=CENTER)
 
         self.experiment1_button = Button(self.main_window, text='Experiment 1', pady=10, width=25, background='#ADFF2F',
-                                         command=lambda: self.experiment1())
+                                         command=lambda: self.experiment2())
         self.experiment2_button = Button(self.main_window, text='Experiment 2', pady=10, width=25, background ='#ADFF2F',
                                          command=lambda: self.experiment2())
         self.experiment3_button = Button(self.main_window, text='Experiment 3', pady=10, width=25, background='#ADFF2F',
