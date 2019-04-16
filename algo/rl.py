@@ -55,7 +55,7 @@ class RL:
             self.reward = self.action.reward # measure reward
             # Q(a,s)  (1-alpha)*Q(a,s) + alpha*[R(s’,a,s)+ γ*maxa’Q(a’,s’)]
             oldAgentPos.qValue = (1-self.alpha) * oldAgentPos.qValue + self.alpha * (self.action.reward + self.discount_factor * self.maxFutureReward(newAgentPos))# update q
-            self.agent.interface.updateQTable(oldAgentPos.position[0], oldAgentPos.position[1], round(oldAgentPos.qValue,3))
+            self.agent.interface.updateQTable(oldAgentPos.position[0], oldAgentPos.position[1], self.action.type.value, round(oldAgentPos.qValue,3))
 
             a = a + 1
 
@@ -65,7 +65,7 @@ class RL:
         if self.policy.type == PolicyType.PGREEDY:
             return policy.pGreedy()
         if self.policy.type == PolicyType.PEXPLOIT:
-            return policy.pExploit()
+            return policy.pGreedy()
 
     def sarsa(self):
         self.position = self.agent.agentPosition  # initial state

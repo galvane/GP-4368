@@ -96,10 +96,11 @@ class GUI:
                 label.grid(row=i.position[0],column=i.position[1], sticky='NSEW')
                 self.labels.append(label)
 
-    def updateQTable(self, x,y, qValue):
+    def updateQTable(self, x,y,action, qValue):
         #self.qTable_window.update_idletasks()
         if (x,y) in self.qTable:
-            self.qTable[(x,y)].configure(text=qValue)
+            state = self.checkState(x,y)
+            self.qTable[state, action].configure(text=qValue)
         #self.qTable_window.update_idletasks()
 
     def updateAgentPosition(self, agentPos):
@@ -179,6 +180,11 @@ class GUI:
 
         self.view_qTable_button.grid()
         self.view_qTable_button.place(relx=0.5, rely=.25, anchor=S)
+
+    def checkState(self, x, y):
+        x = x - 1
+        total = x * 5 + y
+        return total
 
     # def addBlocksToLabel(self, positionToAddBlock):
     #     for l in self.labels:
