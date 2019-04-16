@@ -117,17 +117,31 @@ class GUI:
         self.pd_world_window.update_idletasks()
         for b in self.blocks:
             if b[1].cget("text") == "("+','.join(map(str, cell.position)) + ")":
-                b[0].config(compound=BOTTOM, height=15, width=15, image=self.block_img , anchor='w', justify=CENTER)
-                b[0].image = self.block_img
-                self.pd_world_window.update_idletasks()
+                b[1].config(compound=BOTTOM, height=15, width=15, image=self.block_img, anchor='w', justify=CENTER)
+                b[1].image = self.block_img
+                try:
+                    self.pd_world_window.update_idletasks()
+                except:
+                    self.pd_world_window.mainloop()
+                    self.pd_world_window.update_idletasks()
+                    self.pd_world_window.update()
+
                 break
 
     def removeBlock(self, cell):
         for b in self.blocks:
             if b[1].cget("text") == "(" + ','.join(map(str, cell.position)) + ")":
                 b[0].destroy()
-                #b[0].image = ''
-                self.pd_world_window.update_idletasks()
+                #self.pd_world_window.mainloop()
+                try:
+                    self.pd_world_window.update_idletasks()
+                    self.pd_world_window.update()
+                except:
+                    self.pd_world_window.mainloop()
+                    self.pd_world_window.update_idletasks()
+                    self.pd_world_window.update()
+
+
                 break
 
     def create_pdworld(self):
